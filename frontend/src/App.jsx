@@ -13,6 +13,8 @@ import Prescriptions from './pages/Prescriptions';
 import Bills from './pages/Bills';
 import Users from './pages/Users';
 import ChangePassword from './pages/ChangePassword';
+import Profile from './pages/Profile';
+import About from './pages/About';
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -38,6 +40,8 @@ function AppRoutes() {
         <Route path="prescriptions" element={<Prescriptions />} />
         <Route path="bills" element={<ProtectedRoute roles={['admin', 'receptionist', 'patient']}><Bills /></ProtectedRoute>} />
         <Route path="users" element={<ProtectedRoute roles={['admin']}><Users /></ProtectedRoute>} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="about" element={<About />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

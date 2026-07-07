@@ -57,13 +57,20 @@ export default function Layout() {
 
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-primary-800 text-white transform transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-primary-700">
-          <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              navigate('/about');
+              setSidebarOpen(false);
+            }}
+            className="flex items-center gap-3 rounded-lg text-left hover:bg-primary-700 transition-colors w-full p-2 -m-2"
+            title="About hospital"
+          >
             <Hospital className="w-8 h-8" />
             <div>
               <h1 className="font-bold text-lg">HMS</h1>
               <p className="text-primary-200 text-xs">Hospital Management</p>
             </div>
-          </div>
+          </button>
         </div>
 
         <nav className="p-4 space-y-1">
@@ -107,7 +114,11 @@ export default function Layout() {
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100">
             {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-          <div className="flex items-center gap-3 ml-auto">
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-3 ml-auto rounded-lg px-2 py-1 hover:bg-gray-100 transition-colors"
+            title="View profile"
+          >
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
               <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
@@ -115,7 +126,7 @@ export default function Layout() {
             <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold">
               {user?.fullName?.charAt(0)}
             </div>
-          </div>
+          </button>
         </header>
 
         <main className="flex-1 p-4 lg:p-8 overflow-auto"><Outlet /></main>

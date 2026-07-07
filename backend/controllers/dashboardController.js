@@ -61,7 +61,16 @@ export const getAdminDashboard = async (req, res, next) => {
 export const getDoctorDashboard = async (req, res, next) => {
   try {
     const doctor = await Doctor.findOne({ user: req.user._id });
-    if (!doctor) throw new Error('Doctor profile not found');
+    if (!doctor) {
+      return res.json({
+        success: true,
+        data: {
+          doctor: null,
+          stats: { totalAppointments: 0, todayCount: 0 },
+          todayAppointments: [],
+        },
+      });
+    }
 
     const todayStart = startOfToday();
     const todayEnd = endOfToday();
@@ -119,7 +128,21 @@ export const getReceptionistDashboard = async (req, res, next) => {
 export const getPatientDashboard = async (req, res, next) => {
   try {
     const patient = await Patient.findOne({ user: req.user._id });
-    if (!patient) throw new Error('Patient profile not found');
+    if (!patient) {
+      return res.json({
+        success: true,
+        data: {
+          patient: {
+            fullName: req.user.fullName,
+            bloodGroup: '-',
+            age: '-',
+          },
+          myAppointments: [],
+          myPrescriptions: [],
+          myBills: [],
+        },
+      });
+    }
 
     const [myAppointments, myPrescriptions, myBills] = await Promise.all([
       Appointment.find({ patient: patient._id })

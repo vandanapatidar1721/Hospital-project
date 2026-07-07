@@ -19,15 +19,31 @@ function StatCard({ icon: Icon, label, value, color }) {
   );
 }
 
+function DashboardError({ message }) {
+  return (
+    <div className="card max-w-2xl">
+      <h1 className="text-2xl font-bold text-gray-900 mb-3">Dashboard unavailable</h1>
+      <p className="text-gray-600">
+        {message || 'Unable to load dashboard data for this account.'}
+      </p>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/dashboard/admin').then((res) => setData(res.data.data)).finally(() => setLoading(false));
+    api.get('/dashboard/admin')
+      .then((res) => setData(res.data.data))
+      .catch((err) => setError(err.response?.data?.message || 'Failed to load admin dashboard'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingSpinner />;
+  if (error || !data) return <DashboardError message={error} />;
 
   const { stats, todayAppointments, recentPrescriptions } = data;
 
@@ -90,12 +106,17 @@ function AdminDashboard() {
 function DoctorDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/dashboard/doctor').then((res) => setData(res.data.data)).finally(() => setLoading(false));
+    api.get('/dashboard/doctor')
+      .then((res) => setData(res.data.data))
+      .catch((err) => setError(err.response?.data?.message || 'Failed to load doctor dashboard'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingSpinner />;
+  if (error || !data) return <DashboardError message={error} />;
 
   return (
     <div className="space-y-8">
@@ -140,12 +161,17 @@ function DoctorDashboard() {
 function ReceptionistDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/dashboard/receptionist').then((res) => setData(res.data.data)).finally(() => setLoading(false));
+    api.get('/dashboard/receptionist')
+      .then((res) => setData(res.data.data))
+      .catch((err) => setError(err.response?.data?.message || 'Failed to load receptionist dashboard'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingSpinner />;
+  if (error || !data) return <DashboardError message={error} />;
 
   return (
     <div className="space-y-8">
@@ -187,12 +213,17 @@ function ReceptionistDashboard() {
 function PatientDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/dashboard/patient').then((res) => setData(res.data.data)).finally(() => setLoading(false));
+    api.get('/dashboard/patient')
+      .then((res) => setData(res.data.data))
+      .catch((err) => setError(err.response?.data?.message || 'Failed to load patient dashboard'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingSpinner />;
+  if (error || !data) return <DashboardError message={error} />;
 
   return (
     <div className="space-y-8">
