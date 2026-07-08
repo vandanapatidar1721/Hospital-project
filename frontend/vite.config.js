@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://hospital-project-uojh.onrender.com',
+        target: 'https://hospital-project-j3le.onrender.com',
         changeOrigin: true,
       },
     },
