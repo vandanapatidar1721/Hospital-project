@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://hospital-project-j3le.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -24,5 +24,21 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getApiErrorMessage = (error, fallback = 'Something went wrong') => {
+  const data = error?.response?.data;
+
+  if (Array.isArray(data?.errors) && data.errors.length > 0) {
+    return data.errors
+      .map((item) => item?.msg || item?.message || item)
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  if (typeof data?.errors === 'string') return data.errors;
+  if (Array.isArray(data?.message)) return data.message.join(', ');
+  if (data?.message) return data.message;
+  return fallback;
+};
 
 export default api;

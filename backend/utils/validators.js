@@ -1,6 +1,14 @@
 import { body } from 'express-validator';
 
+export const escapeRegex = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const phoneValidation = body('phone')
+  .trim()
+  .matches(/^\d{10}$/)
+  .withMessage('Phone number must be 10 digits');
+
+const optionalPhoneValidation = body('phone')
+  .optional({ values: 'falsy' })
   .trim()
   .matches(/^\d{10}$/)
   .withMessage('Phone number must be 10 digits');
@@ -19,6 +27,25 @@ const appointmentDateValidation = body('appointmentDate')
     }
     return true;
   });
+
+const validateOptionalPatientLogin = [
+  body('email')
+    .optional({ values: 'falsy' })
+    .isEmail()
+    .withMessage('Valid email is required'),
+  body('password').custom((value, { req }) => {
+    if (req.body.email && !value) {
+      throw new Error('Password is required when email is provided');
+    }
+    if (value && value.length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+    if (value && !req.body.email) {
+      throw new Error('Email is required when password is provided');
+    }
+    return true;
+  }),
+];
 
 export const loginValidation = [
   body('email').isEmail().withMessage('Valid email is required'),
@@ -54,7 +81,19 @@ export const doctorValidation = [
   body('department').notEmpty().withMessage('Department is required'),
   body('qualification').trim().notEmpty().withMessage('Qualification is required'),
   body('experience').isInt({ min: 0 }).withMessage('Experience must be a positive number'),
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
   phoneValidation,
+];
+
+export const doctorUpdateValidation = [
+  body('fullName').optional().trim().notEmpty().withMessage('Full name cannot be empty'),
+  body('email').optional({ values: 'falsy' }).isEmail().withMessage('Valid email is required'),
+  body('department').optional({ values: 'falsy' }).isMongoId().withMessage('Valid department is required'),
+  body('qualification').optional({ values: 'falsy' }).trim().notEmpty().withMessage('Qualification cannot be empty'),
+  body('experience').optional({ values: 'falsy' }).isInt({ min: 0 }).withMessage('Experience must be a positive number'),
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
+  optionalPhoneValidation,
+  body('isActive').optional().isBoolean().withMessage('Status must be active or inactive'),
 ];
 
 export const patientValidation = [
@@ -66,10 +105,28 @@ export const patientValidation = [
   body('bloodGroup')
     .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
     .withMessage('Valid blood group is required'),
+  ...validateOptionalPatientLogin,
+];
+
+export const patientUpdateValidation = [
+  body('fullName').optional().trim().notEmpty().withMessage('Full name cannot be empty'),
+  body('age').optional({ values: 'falsy' }).isInt({ min: 0, max: 150 }).withMessage('Valid age is required'),
+  body('gender').optional({ values: 'falsy' }).isIn(['Male', 'Female', 'Other']).withMessage('Valid gender is required'),
+  optionalPhoneValidation,
+  body('address').optional({ values: 'falsy' }).trim().notEmpty().withMessage('Address cannot be empty'),
+  body('bloodGroup')
+    .optional({ values: 'falsy' })
+    .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+    .withMessage('Valid blood group is required'),
 ];
 
 export const appointmentValidation = [
-  body('patient').notEmpty().withMessage('Patient is required'),
+  body('patient').custom((value, { req }) => {
+    if (req.user?.role !== 'patient' && !value) {
+      throw new Error('Patient is required');
+    }
+    return true;
+  }),
   body('doctor').notEmpty().withMessage('Doctor is required'),
   body('department').notEmpty().withMessage('Department is required'),
   appointmentDateValidation,
@@ -86,16 +143,61 @@ export const prescriptionValidation = [
 
 export const billValidation = [
   body('appointment').notEmpty().withMessage('Appointment is required'),
-  body('consultationFee').isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
-  body('medicineCharges').isFloat({ min: 0 }).withMessage('Medicine charges must be positive'),
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
+  body('medicineCharges').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Medicine charges must be positive'),
+  body('status').optional({ values: 'falsy' }).isIn(['Paid', 'Unpaid']).withMessage('Valid bill status is required'),
+];
+
+export const billUpdateValidation = [
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
+  body('medicineCharges').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Medicine charges must be positive'),
+  body('status').optional({ values: 'falsy' }).isIn(['Paid', 'Unpaid']).withMessage('Valid bill status is required'),
+];
+
+export const createUserValidation = [
+  body('fullName').trim().notEmpty().withMessage('Full name is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('role')
+    .isIn(['admin', 'doctor', 'receptionist', 'patient'])
+    .withMessage('Valid role is required'),
+  optionalPhoneValidation,
+  body('department').optional({ values: 'falsy' }).isMongoId().withMessage('Valid department is required'),
+  body('experience').optional({ values: 'falsy' }).isInt({ min: 0 }).withMessage('Experience must be a positive number'),
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
+  body('age').optional({ values: 'falsy' }).isInt({ min: 0, max: 150 }).withMessage('Valid age is required'),
+  body('gender').optional({ values: 'falsy' }).isIn(['Male', 'Female', 'Other']).withMessage('Valid gender is required'),
+  body('bloodGroup')
+    .optional({ values: 'falsy' })
+    .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+    .withMessage('Valid blood group is required'),
+];
+
+export const receptionistValidation = [
+  body('fullName').trim().notEmpty().withMessage('Full name is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  optionalPhoneValidation,
 ];
 
 export const userUpdateValidation = [
   body('fullName').optional().trim().notEmpty().withMessage('Full name cannot be empty'),
-  body('email').optional().isEmail().withMessage('Valid email is required'),
+  body('email').optional({ values: 'falsy' }).isEmail().withMessage('Valid email is required'),
+  optionalPhoneValidation,
   body('role')
     .optional()
     .isIn(['admin', 'doctor', 'receptionist', 'patient'])
     .withMessage('Valid role is required'),
   body('isActive').optional().isBoolean().withMessage('Status must be active or inactive'),
+  body('department').optional({ values: 'falsy' }).isMongoId().withMessage('Valid department is required'),
+  body('qualification').optional({ values: 'falsy' }).trim().notEmpty().withMessage('Qualification cannot be empty'),
+  body('experience').optional({ values: 'falsy' }).isInt({ min: 0 }).withMessage('Experience must be a positive number'),
+  body('consultationFee').optional({ values: 'falsy' }).isFloat({ min: 0 }).withMessage('Consultation fee must be positive'),
+  body('age').optional({ values: 'falsy' }).isInt({ min: 0, max: 150 }).withMessage('Valid age is required'),
+  body('gender').optional({ values: 'falsy' }).isIn(['Male', 'Female', 'Other']).withMessage('Valid gender is required'),
+  body('address').optional({ values: 'falsy' }).trim().notEmpty().withMessage('Address cannot be empty'),
+  body('bloodGroup')
+    .optional({ values: 'falsy' })
+    .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+    .withMessage('Valid blood group is required'),
 ];

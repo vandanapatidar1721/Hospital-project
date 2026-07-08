@@ -4,6 +4,7 @@ import User from '../models/User.js';
 import Department from '../models/Department.js';
 import Doctor from '../models/Doctor.js';
 import Patient from '../models/Patient.js';
+import Receptionist from '../models/Receptionist.js';
 import Appointment from '../models/Appointment.js';
 import Prescription from '../models/Prescription.js';
 import Bill from '../models/Bill.js';
@@ -34,6 +35,7 @@ async function seed() {
       Department.deleteMany({}),
       Doctor.deleteMany({}),
       Patient.deleteMany({}),
+      Receptionist.deleteMany({}),
       Appointment.deleteMany({}),
       Prescription.deleteMany({}),
       Bill.deleteMany({}),
@@ -47,7 +49,7 @@ async function seed() {
       phone: '9876543210',
     });
 
-    await User.create({
+    const receptionistUser = await User.create({
       fullName: 'Sarah Johnson',
       email: requiredEnv('SEED_RECEPTIONIST_EMAIL'),
       password: requiredEnv('SEED_RECEPTIONIST_PASSWORD'),
@@ -55,30 +57,37 @@ async function seed() {
       phone: '9876543211',
     });
 
+    await Receptionist.create({
+      user: receptionistUser._id,
+      fullName: 'Sarah Johnson',
+      phone: '9876543211',
+      shift: 'Morning',
+    });
+
     const createdDepts = await Department.insertMany(departments);
 
-    const doctorUsers = await User.insertMany([
-      {
+    const doctorUsers = await Promise.all([
+      User.create({
         fullName: 'Dr. Rajesh Kumar',
         email: requiredEnv('SEED_DOCTOR1_EMAIL'),
         password: requiredEnv('SEED_DOCTOR1_PASSWORD'),
         role: 'doctor',
         phone: '9876543212',
-      },
-      {
+      }),
+      User.create({
         fullName: 'Dr. Priya Sharma',
         email: requiredEnv('SEED_DOCTOR2_EMAIL'),
         password: requiredEnv('SEED_DOCTOR2_PASSWORD'),
         role: 'doctor',
         phone: '9876543213',
-      },
-      {
+      }),
+      User.create({
         fullName: 'Dr. Amit Patel',
         email: requiredEnv('SEED_DOCTOR3_EMAIL'),
         password: requiredEnv('SEED_DOCTOR3_PASSWORD'),
         role: 'doctor',
         phone: '9876543214',
-      },
+      }),
     ]);
 
     const doctors = await Doctor.insertMany([

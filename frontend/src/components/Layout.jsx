@@ -15,7 +15,7 @@ const navItems = {
     { to: '/appointments', icon: Calendar, label: 'Appointments' },
     { to: '/prescriptions', icon: FileText, label: 'Prescriptions' },
     { to: '/bills', icon: Receipt, label: 'Billing' },
-    { to: '/users', icon: UserCog, label: 'Users' },
+    { to: '/users', icon: UserCog, label: 'Role Assign' },
   ],
   doctor: [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Hospital, Eye, EyeOff } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { BLOOD_GROUPS, GENDERS } from '../utils/helpers';
 

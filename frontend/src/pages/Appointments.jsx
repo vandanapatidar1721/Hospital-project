@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Plus, XCircle, Pencil } from 'lucide-react';
-import toast from 'react-hot-toast';
-import api from '../services/api';
+import { Plus, XCircle, Pencil, RefreshCcw } from 'lucide-react';
+import { toast } from 'react-toastify';
+import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
@@ -10,7 +10,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Appointments() {
   const { user } = useAuth();
-  const canBook = ['admin', 'receptionist'].includes(user?.role);
+  const canBook = ['admin', 'receptionist', 'patient'].includes(user?.role);
+  const isPatient = user?.role === 'patient';
   const canUpdate = ['admin', 'receptionist', 'doctor'].includes(user?.role);
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState([]);
@@ -23,23 +24,35 @@ export default function Appointments() {
   const [editModal, setEditModal] = useState(null);
   const [form, setForm] = useState({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
   const today = new Date().toISOString().split('T')[0];
+  const filteredDoctors = form.department
+    ? doctors.filter((doctor) => String(doctor.department?._id || doctor.department) === String(form.department))
+    : [];
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const params = { search, ...(statusFilter && { status: statusFilter }) };
+      const bookingRequests = isPatient
+        ? [api.get('/doctors'), api.get('/departments')]
+        : [api.get('/patients'), api.get('/doctors'), api.get('/departments')];
       const [apptRes, ...rest] = await Promise.all([
         api.get('/appointments', { params }),
-        ...(canBook ? [api.get('/patients'), api.get('/doctors'), api.get('/departments')] : []),
+        ...(canBook ? bookingRequests : []),
       ]);
       setAppointments(apptRes.data.data);
       if (canBook) {
-        setPatients(rest[0].data.data);
-        setDoctors(rest[1].data.data);
-        setDepartments(rest[2].data.data);
+        if (isPatient) {
+          setPatients([]);
+          setDoctors(rest[0].data.data);
+          setDepartments(rest[1].data.data);
+        } else {
+          setPatients(rest[0].data.data);
+          setDoctors(rest[1].data.data);
+          setDepartments(rest[2].data.data);
+        }
       }
-    } catch {
-      toast.error('Failed to load appointments');
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, 'Failed to load appointments'));
     } finally {
       setLoading(false);
     }
@@ -47,9 +60,12 @@ export default function Appointments() {
 
   useEffect(() => { fetchData(); }, [search, statusFilter]);
 
+  const handleDepartmentChange = (departmentId) => {
+    setForm({ ...form, department: departmentId, doctor: '' });
+  };
+
   const handleDoctorChange = (doctorId) => {
-    const doc = doctors.find((d) => d._id === doctorId);
-    setForm({ ...form, doctor: doctorId, department: doc?.department?._id || doc?.department || '' });
+    setForm({ ...form, doctor: doctorId });
   };
 
   const handleSubmit = async (e) => {
@@ -61,7 +77,7 @@ export default function Appointments() {
       setForm({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Booking failed');
+      toast.error(getApiErrorMessage(err, 'Booking failed'));
     }
   };
 
@@ -72,7 +88,7 @@ export default function Appointments() {
       setEditModal(null);
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Update failed');
+      toast.error(getApiErrorMessage(err, 'Update failed'));
     }
   };
 
@@ -83,8 +99,20 @@ export default function Appointments() {
       toast.success('Appointment cancelled');
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Cancel failed');
+      toast.error(getApiErrorMessage(err, 'Cancel failed'));
     }
+  };
+
+  const handleRebook = (appointment) => {
+    setForm({
+      patient: appointment.patient?._id || appointment.patient || '',
+      doctor: appointment.doctor?._id || appointment.doctor || '',
+      department: appointment.department?._id || appointment.department || '',
+      appointmentDate: '',
+      appointmentTime: appointment.appointmentTime || '',
+      notes: appointment.notes || '',
+    });
+    setModalOpen(true);
   };
 
   return (
@@ -138,6 +166,9 @@ export default function Appointments() {
                       {a.status === 'Pending' && (
                         <button onClick={() => handleCancel(a._id)} className="p-1.5 text-gray-400 hover:text-red-600" title="Cancel"><XCircle className="w-4 h-4" /></button>
                       )}
+                      {canBook && a.status === 'Cancelled' && (
+                        <button onClick={() => handleRebook(a)} className="p-1.5 text-gray-400 hover:text-primary-600" title="Rebook appointment"><RefreshCcw className="w-4 h-4" /></button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -149,9 +180,9 @@ export default function Appointments() {
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Book Appointment" size="lg">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="input-field" required><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Doctor</label><select value={form.doctor} onChange={(e) => handleDoctorChange(e.target.value)} className="input-field" required><option value="">Select doctor</option>{doctors.map((d) => <option key={d._id} value={d._id}>{d.user?.fullName} - {d.department?.name}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field" required><option value="">Select</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
+          {!isPatient && <div><label className="block text-sm font-medium mb-1">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="input-field" required><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>}
+          <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => handleDepartmentChange(e.target.value)} className="input-field" required><option value="">Select department first</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
+          <div><label className="block text-sm font-medium mb-1">Doctor</label><select value={form.doctor} onChange={(e) => handleDoctorChange(e.target.value)} className="input-field" required disabled={!form.department}><option value="">{form.department ? 'Select doctor' : 'Select department first'}</option>{filteredDoctors.map((d) => <option key={d._id} value={d._id}>{d.user?.fullName} - {d.qualification}</option>)}</select>{form.department && filteredDoctors.length === 0 && <p className="text-xs text-red-500 mt-1">No doctors available in this department</p>}</div>
           <div><label className="block text-sm font-medium mb-1">Date</label><input type="date" min={today} value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Time</label><select value={form.appointmentTime} onChange={(e) => setForm({ ...form, appointmentTime: e.target.value })} className="input-field" required><option value="">Select time</option>{TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Notes</label><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field" rows={2} /></div>

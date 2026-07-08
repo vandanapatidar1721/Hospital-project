@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import Patient from '../models/Patient.js';
 import { generateToken } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { buildUploadUrl } from '../middleware/upload.js';
 
 export const login = async (req, res, next) => {
   try {
@@ -67,6 +68,22 @@ export const signup = async (req, res, next) => {
 
 export const getMe = async (req, res) => {
   res.json({ success: true, user: req.user });
+};
+
+export const updateProfileImage = async (req, res, next) => {
+  try {
+    if (!req.file) throw new AppError('Profile image is required', 400);
+
+    const user = await User.findById(req.user._id);
+    if (!user) throw new AppError('User not found', 404);
+
+    user.profileImage = buildUploadUrl(req.file.filename);
+    await user.save();
+
+    res.json({ success: true, data: user, message: 'Profile image updated' });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const changePassword = async (req, res, next) => {

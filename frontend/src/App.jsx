@@ -12,6 +12,7 @@ import Appointments from './pages/Appointments';
 import Prescriptions from './pages/Prescriptions';
 import Bills from './pages/Bills';
 import Users from './pages/Users';
+import Receptionists from './pages/Receptionists';
 import ChangePassword from './pages/ChangePassword';
 import Profile from './pages/Profile';
 import About from './pages/About';
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="appointments" element={<Appointments />} />
         <Route path="prescriptions" element={<Prescriptions />} />
         <Route path="bills" element={<ProtectedRoute roles={['admin', 'receptionist', 'patient']}><Bills /></ProtectedRoute>} />
+        <Route path="receptionists" element={<ProtectedRoute roles={['admin']}><Receptionists /></ProtectedRoute>} />
         <Route path="users" element={<ProtectedRoute roles={['admin']}><Users /></ProtectedRoute>} />
         <Route path="profile" element={<Profile />} />
         <Route path="about" element={<About />} />

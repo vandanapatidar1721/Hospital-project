@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
-import toast from 'react-hot-toast';
-import api from '../services/api';
+import { toast } from 'react-toastify';
+import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
@@ -26,8 +26,8 @@ export default function Patients() {
     try {
       const { data } = await api.get('/patients', { params: { search } });
       setPatients(data.data);
-    } catch {
-      toast.error('Failed to load patients');
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, 'Failed to load patients'));
     } finally {
       setLoading(false);
     }
@@ -42,15 +42,32 @@ export default function Patients() {
     setModalOpen(true);
   };
 
+  const onlyDigits = (value) => value.replace(/\D/g, '').slice(0, 10);
+
+  const buildPayload = () => ({
+    ...form,
+    age: form.age === '' ? undefined : Number(form.age),
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!editing && form.email && !form.password) {
+      toast.error('Password is required when email is provided');
+      return;
+    }
+    if (!editing && form.password && !form.email) {
+      toast.error('Email is required when password is provided');
+      return;
+    }
+
     try {
       if (editing) {
-        const { email, password, ...updateData } = form;
+        const { email, password, ...updateData } = buildPayload();
         await api.put(`/patients/${editing._id}`, updateData);
         toast.success('Patient updated');
       } else {
-        const payload = { ...form };
+        const payload = buildPayload();
         if (!payload.email) { delete payload.email; delete payload.password; }
         await api.post('/patients', payload);
         toast.success('Patient registered');
@@ -58,7 +75,7 @@ export default function Patients() {
       setModalOpen(false);
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      toast.error(getApiErrorMessage(err, 'Operation failed'));
     }
   };
 
@@ -69,7 +86,7 @@ export default function Patients() {
       toast.success('Patient deleted');
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Delete failed');
+      toast.error(getApiErrorMessage(err, 'Delete failed'));
     }
   };
 
@@ -130,7 +147,7 @@ export default function Patients() {
           <div><label className="block text-sm font-medium mb-1">Age</label><input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} className="input-field" required min={0} /></div>
           <div><label className="block text-sm font-medium mb-1">Gender</label><select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="input-field">{GENDERS.map((g) => <option key={g}>{g}</option>)}</select></div>
           <div><label className="block text-sm font-medium mb-1">Blood Group</label><select value={form.bloodGroup} onChange={(e) => setForm({ ...form, bloodGroup: e.target.value })} className="input-field">{BLOOD_GROUPS.map((b) => <option key={b}>{b}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" required /></div>
+          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
           <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Address</label><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="input-field" required /></div>
           {!editing && (
             <>

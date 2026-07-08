@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -11,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <App />
-        <Toaster position="top-right" />
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

@@ -4,6 +4,7 @@ import Bill from '../models/Bill.js';
 import Appointment from '../models/Appointment.js';
 import Prescription from '../models/Prescription.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { assertDoctorOrPatientAccess } from '../services/ownership.js';
 
 const billPopulate = [
   { path: 'patient', select: 'fullName phone address' },
@@ -45,6 +46,7 @@ export const getBill = async (req, res, next) => {
   try {
     const bill = await Bill.findById(req.params.id).populate(billPopulate);
     if (!bill) throw new AppError('Bill not found', 404);
+    await assertDoctorOrPatientAccess(req.user, bill);
     res.json({ success: true, data: bill });
   } catch (error) {
     next(error);

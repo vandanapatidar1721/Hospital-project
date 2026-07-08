@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, Stethoscope, Building2, Calendar, FileText, Receipt } from 'lucide-react';
+import { Users, UserCheck, Stethoscope, Building2, Calendar, FileText, Receipt } from 'lucide-react';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDate, getDoctorName, getStatusBadge } from '../utils/helpers';
@@ -60,9 +60,10 @@ function AdminDashboard() {
   return (
     <div className="space-y-8">
       <DashboardHero title="Admin Dashboard" subtitle="A soft overview of hospital activity, teams, appointments, and prescriptions." />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         <StatCard icon={Stethoscope} label="Total Doctors" value={stats.totalDoctors} color="bg-primary-600" />
         <StatCard icon={Users} label="Total Patients" value={stats.totalPatients} color="bg-primary-500" />
+        <StatCard icon={UserCheck} label="Receptionists" value={stats.totalReceptionists || 0} color="bg-primary-500" />
         <StatCard icon={Building2} label="Departments" value={stats.totalDepartments} color="bg-primary-600" />
         <StatCard icon={Calendar} label="Total Appointments" value={stats.totalAppointments} color="bg-primary-700" />
       </div>

@@ -1,6 +1,27 @@
 import User from '../models/User.js';
 import Patient from '../models/Patient.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { escapeRegex } from '../utils/validators.js';
+import { assertPatientAccess } from '../services/ownership.js';
+
+const ensurePatientProfiles = async () => {
+  const users = await User.find({ role: 'patient' });
+
+  await Promise.all(users.map(async (user) => {
+    const exists = await Patient.exists({ user: user._id });
+    if (!exists && user.phone) {
+      await Patient.create({
+        user: user._id,
+        fullName: user.fullName,
+        age: 0,
+        gender: 'Other',
+        phone: user.phone,
+        address: '-',
+        bloodGroup: 'O+',
+      });
+    }
+  }));
+};
 
 export const getPatients = async (req, res, next) => {
   try {
@@ -8,15 +29,18 @@ export const getPatients = async (req, res, next) => {
     let filter = {};
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       filter = {
         $or: [
-          { fullName: { $regex: search, $options: 'i' } },
-          { phone: { $regex: search, $options: 'i' } },
+          { fullName: { $regex: safeSearch, $options: 'i' } },
+          { phone: { $regex: safeSearch, $options: 'i' } },
         ],
       };
     }
 
-    const patients = await Patient.find(filter).populate('user', 'fullName email').sort({ createdAt: -1 });
+    await ensurePatientProfiles();
+    let patients = await Patient.find(filter).populate('user', 'fullName email role').sort({ createdAt: -1 });
+    patients = patients.filter((patient) => !patient.user || patient.user.role === 'patient');
     res.json({ success: true, data: patients });
   } catch (error) {
     next(error);
@@ -27,6 +51,7 @@ export const getPatient = async (req, res, next) => {
   try {
     const patient = await Patient.findById(req.params.id).populate('user', 'fullName email');
     if (!patient) throw new AppError('Patient not found', 404);
+    await assertPatientAccess(req.user, patient._id);
     res.json({ success: true, data: patient });
   } catch (error) {
     next(error);
@@ -34,6 +59,8 @@ export const getPatient = async (req, res, next) => {
 };
 
 export const createPatient = async (req, res, next) => {
+  let user = null;
+
   try {
     const { fullName, age, gender, phone, address, bloodGroup, email, password } = req.body;
 
@@ -42,9 +69,9 @@ export const createPatient = async (req, res, next) => {
       const existing = await User.findOne({ email: email.toLowerCase() });
       if (existing) throw new AppError('Email already registered', 400);
 
-      const user = await User.create({
+      user = await User.create({
         fullName,
-        email,
+        email: email.toLowerCase(),
         password,
         role: 'patient',
         phone,
@@ -65,6 +92,7 @@ export const createPatient = async (req, res, next) => {
     const populated = await Patient.findById(patient._id).populate('user', 'fullName email');
     res.status(201).json({ success: true, data: populated });
   } catch (error) {
+    if (user?._id) await User.findByIdAndDelete(user._id);
     next(error);
   }
 };
@@ -75,11 +103,25 @@ export const updatePatient = async (req, res, next) => {
     if (!patient) throw new AppError('Patient not found', 404);
 
     const { fullName, age, gender, phone, address, bloodGroup } = req.body;
-    Object.assign(patient, { fullName, age, gender, phone, address, bloodGroup });
+    Object.assign(patient, {
+      ...(fullName !== undefined && { fullName }),
+      ...(age !== undefined && { age }),
+      ...(gender !== undefined && { gender }),
+      ...(phone !== undefined && { phone }),
+      ...(address !== undefined && { address }),
+      ...(bloodGroup !== undefined && { bloodGroup }),
+    });
     await patient.save();
 
-    if (patient.user && fullName) {
-      await User.findByIdAndUpdate(patient.user, { fullName, phone });
+    if (patient.user && (fullName !== undefined || phone !== undefined)) {
+      await User.findByIdAndUpdate(
+        patient.user,
+        {
+          ...(fullName !== undefined && { fullName }),
+          ...(phone !== undefined && { phone }),
+        },
+        { runValidators: true }
+      );
     }
 
     const populated = await Patient.findById(patient._id).populate('user', 'fullName email');

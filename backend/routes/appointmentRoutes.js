@@ -16,7 +16,7 @@ router.use(protect);
 
 router.get('/', authorize('admin', 'doctor', 'receptionist', 'patient'), getAppointments);
 router.get('/:id', authorize('admin', 'doctor', 'receptionist', 'patient'), getAppointment);
-router.post('/', authorize('admin', 'receptionist'), appointmentValidation, validate, createAppointment);
+router.post('/', authorize('admin', 'receptionist', 'patient'), appointmentValidation, validate, createAppointment);
 router.put('/:id', authorize('admin', 'receptionist', 'doctor'), updateAppointment);
 router.patch('/:id/cancel', authorize('admin', 'receptionist', 'patient'), cancelAppointment);
 

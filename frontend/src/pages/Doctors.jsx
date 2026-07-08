@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
-import toast from 'react-hot-toast';
-import api from '../services/api';
+import { toast } from 'react-toastify';
+import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
@@ -22,6 +22,8 @@ export default function Doctors() {
   const [viewDoctor, setViewDoctor] = useState(null);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [newDepartment, setNewDepartment] = useState('');
+  const [creatingDepartment, setCreatingDepartment] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -32,8 +34,8 @@ export default function Doctors() {
       ]);
       setDoctors(docRes.data.data);
       setDepartments(deptRes.data.data);
-    } catch {
-      toast.error('Failed to load doctors');
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, 'Failed to load doctors'));
     } finally {
       setLoading(false);
     }
@@ -44,11 +46,13 @@ export default function Doctors() {
   const openCreate = () => {
     setEditing(null);
     setForm(emptyForm);
+    setNewDepartment('');
     setModalOpen(true);
   };
 
   const openEdit = (doc) => {
     setEditing(doc);
+    setNewDepartment('');
     setForm({
       fullName: doc.user?.fullName || '',
       email: doc.user?.email || '',
@@ -62,21 +66,51 @@ export default function Doctors() {
     setModalOpen(true);
   };
 
+  const onlyDigits = (value) => value.replace(/\D/g, '').slice(0, 10);
+
+  const buildPayload = () => ({
+    ...form,
+    experience: form.experience === '' ? undefined : Number(form.experience),
+    consultationFee: form.consultationFee === '' ? undefined : Number(form.consultationFee),
+  });
+
+  const handleAddDepartment = async () => {
+    const name = newDepartment.trim();
+    if (!name) {
+      toast.error('Department name is required');
+      return;
+    }
+
+    setCreatingDepartment(true);
+    try {
+      const { data } = await api.post('/departments', { name });
+      setDepartments((prev) => [...prev, data.data].sort((a, b) => a.name.localeCompare(b.name)));
+      setForm((prev) => ({ ...prev, department: data.data._id }));
+      setNewDepartment('');
+      toast.success('Department added');
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, 'Failed to add department'));
+    } finally {
+      setCreatingDepartment(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = buildPayload();
       if (editing) {
-        const { password, ...updateData } = form;
+        const { password, ...updateData } = payload;
         await api.put(`/doctors/${editing._id}`, updateData);
         toast.success('Doctor updated');
       } else {
-        await api.post('/doctors', form);
+        await api.post('/doctors', payload);
         toast.success('Doctor created');
       }
       setModalOpen(false);
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      toast.error(getApiErrorMessage(err, 'Operation failed'));
     }
   };
 
@@ -87,7 +121,7 @@ export default function Doctors() {
       toast.success('Doctor deleted');
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Delete failed');
+      toast.error(getApiErrorMessage(err, 'Delete failed'));
     }
   };
 
@@ -151,10 +185,22 @@ export default function Doctors() {
           <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required disabled={!!editing} /></div>
           {!editing && <div><label className="block text-sm font-medium mb-1">Password</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required minLength={6} /></div>}
-          <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field" required><option value="">Select</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-medium mb-1">Department</label>
+            <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field" required>
+              <option value="">Select department</option>
+              {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
+            </select>
+            <div className="mt-2 flex gap-2">
+              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field" placeholder="New department name" />
+              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary whitespace-nowrap">
+                {creatingDepartment ? 'Adding...' : 'Add Department'}
+              </button>
+            </div>
+          </div>
           <div><label className="block text-sm font-medium mb-1">Qualification</label><input value={form.qualification} onChange={(e) => setForm({ ...form, qualification: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Experience (years)</label><input type="number" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} className="input-field" required min={0} /></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" required /></div>
+          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
           <div><label className="block text-sm font-medium mb-1">Consultation Fee (₹)</label><input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="input-field" min={0} /></div>
           <div className="sm:col-span-2 flex gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>

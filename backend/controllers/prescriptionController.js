@@ -3,6 +3,7 @@ import Patient from '../models/Patient.js';
 import Prescription from '../models/Prescription.js';
 import Appointment from '../models/Appointment.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { assertDoctorOrPatientAccess } from '../services/ownership.js';
 
 const prescriptionPopulate = [
   { path: 'patient', select: 'fullName age gender phone bloodGroup' },
@@ -51,6 +52,7 @@ export const getPrescription = async (req, res, next) => {
   try {
     const prescription = await Prescription.findById(req.params.id).populate(prescriptionPopulate);
     if (!prescription) throw new AppError('Prescription not found', 404);
+    await assertDoctorOrPatientAccess(req.user, prescription);
     res.json({ success: true, data: prescription });
   } catch (error) {
     next(error);
