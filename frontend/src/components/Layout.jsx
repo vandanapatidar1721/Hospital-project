@@ -1,7 +1,7 @@
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Stethoscope, Users, Calendar,
-  FileText, Receipt, UserCog, LogOut, Menu, X, KeyRound, Hospital,
+  FileText, Receipt, UserCog, UserCheck, LogOut, Menu, X, KeyRound, Hospital,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +15,7 @@ const navItems = {
     { to: '/appointments', icon: Calendar, label: 'Appointments' },
     { to: '/prescriptions', icon: FileText, label: 'Prescriptions' },
     { to: '/bills', icon: Receipt, label: 'Billing' },
+    { to: '/receptionists', icon: UserCheck, label: 'Receptionists' },
     { to: '/users', icon: UserCog, label: 'Role Assign' },
   ],
   doctor: [

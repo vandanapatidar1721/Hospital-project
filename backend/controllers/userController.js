@@ -6,6 +6,18 @@ import Department from '../models/Department.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { escapeRegex } from '../utils/validators.js';
 
+const ensureUniqueUserIdentity = async ({ email, phone, excludeId = null }) => {
+  if (email) {
+    const existingEmail = await User.findOne({ email: email.toLowerCase(), ...(excludeId && { _id: { $ne: excludeId } }) });
+    if (existingEmail) throw new AppError('Email already registered', 400);
+  }
+
+  if (phone) {
+    const existingPhone = await User.findOne({ phone, ...(excludeId && { _id: { $ne: excludeId } }) });
+    if (existingPhone) throw new AppError('Phone number already registered', 400);
+  }
+};
+
 const getDefaultDepartment = async () => {
   let department = await Department.findOne({ name: 'General Medicine' });
   if (!department) {
@@ -179,8 +191,7 @@ export const createUser = async (req, res, next) => {
   try {
     const { fullName, email, password, phone, role } = req.body;
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) throw new AppError('Email already registered', 400);
+    await ensureUniqueUserIdentity({ email, phone });
 
     const user = await User.create({
       fullName,
@@ -204,8 +215,7 @@ export const createReceptionist = async (req, res, next) => {
   try {
     const { fullName, email, password, phone } = req.body;
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) throw new AppError('Email already registered', 400);
+    await ensureUniqueUserIdentity({ email, phone });
 
     const user = await User.create({
       fullName,
