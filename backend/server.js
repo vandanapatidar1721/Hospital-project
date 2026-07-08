@@ -28,12 +28,13 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://hospital-project-seven-jade.vercel.app',
+  'https://hospital-project-dun.vercel.app/',
   ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map((url) => url.trim()) : []),
 ];
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    const isAllowedVercelApp = /^https:\/\/hospital-project-[a-z0-9-]+\.vercel\.app$/.test(origin || '');
+    if (!origin || allowedOrigins.includes(origin) || isAllowedVercelApp) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
