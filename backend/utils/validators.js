@@ -1,5 +1,25 @@
 import { body } from 'express-validator';
 
+const phoneValidation = body('phone')
+  .trim()
+  .matches(/^\d{10}$/)
+  .withMessage('Phone number must be 10 digits');
+
+const appointmentDateValidation = body('appointmentDate')
+  .notEmpty()
+  .withMessage('Appointment date is required')
+  .custom((value) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const appointmentDate = new Date(value);
+    appointmentDate.setHours(0, 0, 0, 0);
+
+    if (appointmentDate < today) {
+      throw new Error('Appointment date cannot be in the past');
+    }
+    return true;
+  });
+
 export const loginValidation = [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required'),
@@ -16,7 +36,7 @@ export const signupValidation = [
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('age').isInt({ min: 0, max: 150 }).withMessage('Valid age is required'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid gender is required'),
-  body('phone').trim().notEmpty().withMessage('Phone number is required'),
+  phoneValidation,
   body('address').trim().notEmpty().withMessage('Address is required'),
   body('bloodGroup')
     .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
@@ -34,14 +54,14 @@ export const doctorValidation = [
   body('department').notEmpty().withMessage('Department is required'),
   body('qualification').trim().notEmpty().withMessage('Qualification is required'),
   body('experience').isInt({ min: 0 }).withMessage('Experience must be a positive number'),
-  body('phone').trim().notEmpty().withMessage('Phone number is required'),
+  phoneValidation,
 ];
 
 export const patientValidation = [
   body('fullName').trim().notEmpty().withMessage('Full name is required'),
   body('age').isInt({ min: 0, max: 150 }).withMessage('Valid age is required'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid gender is required'),
-  body('phone').trim().notEmpty().withMessage('Phone number is required'),
+  phoneValidation,
   body('address').trim().notEmpty().withMessage('Address is required'),
   body('bloodGroup')
     .isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
@@ -52,7 +72,7 @@ export const appointmentValidation = [
   body('patient').notEmpty().withMessage('Patient is required'),
   body('doctor').notEmpty().withMessage('Doctor is required'),
   body('department').notEmpty().withMessage('Department is required'),
-  body('appointmentDate').notEmpty().withMessage('Appointment date is required'),
+  appointmentDateValidation,
   body('appointmentTime').trim().notEmpty().withMessage('Appointment time is required'),
 ];
 

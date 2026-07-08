@@ -22,6 +22,7 @@ export default function Appointments() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModal, setEditModal] = useState(null);
   const [form, setForm] = useState({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
+  const today = new Date().toISOString().split('T')[0];
 
   const fetchData = async () => {
     setLoading(true);
@@ -151,7 +152,7 @@ export default function Appointments() {
           <div><label className="block text-sm font-medium mb-1">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="input-field" required><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>
           <div><label className="block text-sm font-medium mb-1">Doctor</label><select value={form.doctor} onChange={(e) => handleDoctorChange(e.target.value)} className="input-field" required><option value="">Select doctor</option>{doctors.map((d) => <option key={d._id} value={d._id}>{d.user?.fullName} - {d.department?.name}</option>)}</select></div>
           <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field" required><option value="">Select</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Date</label><input type="date" value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="input-field" required /></div>
+          <div><label className="block text-sm font-medium mb-1">Date</label><input type="date" min={today} value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Time</label><select value={form.appointmentTime} onChange={(e) => setForm({ ...form, appointmentTime: e.target.value })} className="input-field" required><option value="">Select time</option>{TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Notes</label><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field" rows={2} /></div>
           <div className="sm:col-span-2 flex gap-3 justify-end">

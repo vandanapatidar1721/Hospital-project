@@ -62,7 +62,7 @@ export default function About() {
 
   return (
     <div className="space-y-8">
-      <div className="card bg-gradient-to-r from-primary-800 to-primary-600 text-white overflow-hidden relative">
+      <div className="card bg-primary-800 text-white overflow-hidden relative">
         <div className="absolute right-8 top-8 opacity-10">
           <Activity className="w-40 h-40" />
         </div>

@@ -41,22 +41,24 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-primary-800 text-white p-12 flex-col justify-between">
-        <div className="flex items-center gap-3">
-          <Hospital className="w-10 h-10" />
-          <span className="text-3xl font-bold">Hospital Management System</span>
-        </div>
-        <div>
-          <h2 className="text-4xl font-bold mb-4">Create Your Patient Account</h2>
-          <p className="text-primary-200 text-lg leading-relaxed">
-            Sign up to view appointments, prescriptions, and bills from one secure patient portal.
-          </p>
+    <div className="min-h-screen flex bg-gray-50">
+      <div className="hidden lg:flex lg:w-1/2 p-8">
+        <div className="relative w-full overflow-hidden rounded-2xl bg-primary-800 text-white p-12 flex flex-col justify-between shadow-2xl">
+          <div className="relative flex items-center gap-3">
+            <div className="rounded-2xl bg-white/20 p-3"><Hospital className="w-9 h-9" /></div>
+            <span className="text-3xl font-bold">Hospital Management System</span>
+          </div>
+          <div className="relative">
+            <h2 className="text-5xl font-bold mb-4 leading-tight">Create Your Patient Account</h2>
+            <p className="text-white/85 text-lg leading-relaxed">
+              Sign up to view appointments, prescriptions, and bills from one secure patient portal.
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-2xl rounded-xl bg-white p-8 shadow-xl ring-1 ring-gray-100">
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <Hospital className="w-8 h-8 text-primary-600" />
             <span className="text-xl font-bold text-gray-900">Patient Signup</span>
@@ -144,9 +146,12 @@ export default function Signup() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
               <input
                 value={form.phone}
-                onChange={(e) => updateField('phone', e.target.value)}
+                onChange={(e) => updateField('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                 className="input-field"
-                placeholder="Enter your phone number"
+                placeholder="10 digit phone number"
+                inputMode="numeric"
+                pattern="\d{10}"
+                maxLength={10}
                 required
               />
             </div>

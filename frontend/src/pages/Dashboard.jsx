@@ -19,6 +19,16 @@ function StatCard({ icon: Icon, label, value, color }) {
   );
 }
 
+function DashboardHero({ title, subtitle }) {
+  return (
+    <div className="card border-l-4 border-primary-600">
+      <p className="text-sm font-medium text-primary-600">Welcome back</p>
+      <h1 className="text-2xl font-bold text-gray-900 mt-1">{title}</h1>
+      <p className="text-gray-600 mt-2">{subtitle}</p>
+    </div>
+  );
+}
+
 function DashboardError({ message }) {
   return (
     <div className="card max-w-2xl">
@@ -49,12 +59,12 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+      <DashboardHero title="Admin Dashboard" subtitle="A soft overview of hospital activity, teams, appointments, and prescriptions." />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Stethoscope} label="Total Doctors" value={stats.totalDoctors} color="bg-blue-500" />
-        <StatCard icon={Users} label="Total Patients" value={stats.totalPatients} color="bg-green-500" />
-        <StatCard icon={Building2} label="Departments" value={stats.totalDepartments} color="bg-purple-500" />
-        <StatCard icon={Calendar} label="Total Appointments" value={stats.totalAppointments} color="bg-orange-500" />
+        <StatCard icon={Stethoscope} label="Total Doctors" value={stats.totalDoctors} color="bg-primary-600" />
+        <StatCard icon={Users} label="Total Patients" value={stats.totalPatients} color="bg-primary-500" />
+        <StatCard icon={Building2} label="Departments" value={stats.totalDepartments} color="bg-primary-600" />
+        <StatCard icon={Calendar} label="Total Appointments" value={stats.totalAppointments} color="bg-primary-700" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -65,7 +75,7 @@ function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {todayAppointments.map((a) => (
-                <div key={a._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={a._id} className="soft-list-item flex items-center justify-between">
                   <div>
                     <p className="font-medium">{a.patient?.fullName}</p>
                     <p className="text-sm text-gray-500">{getDoctorName(a.doctor)} • {a.department?.name}</p>
@@ -87,7 +97,7 @@ function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {recentPrescriptions.map((p) => (
-                <div key={p._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={p._id} className="soft-list-item flex items-center justify-between">
                   <div>
                     <p className="font-medium">{p.patient?.fullName}</p>
                     <p className="text-sm text-gray-500">Dr. {getDoctorName(p.doctor)}</p>
@@ -120,10 +130,10 @@ function DoctorDashboard() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Doctor Dashboard</h1>
+      <DashboardHero title="Doctor Dashboard" subtitle="Keep today’s consultations, patients, and schedule beautifully organized." />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <StatCard icon={Calendar} label="Total Appointments" value={data.stats.totalAppointments} color="bg-blue-500" />
-        <StatCard icon={Calendar} label="Today's Appointments" value={data.stats.todayCount} color="bg-green-500" />
+        <StatCard icon={Calendar} label="Total Appointments" value={data.stats.totalAppointments} color="bg-primary-600" />
+        <StatCard icon={Calendar} label="Today's Appointments" value={data.stats.todayCount} color="bg-primary-500" />
       </div>
       <div className="card">
         <h2 className="text-lg font-semibold mb-4">Today&apos;s Schedule</h2>
@@ -175,16 +185,16 @@ function ReceptionistDashboard() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Receptionist Dashboard</h1>
+      <DashboardHero title="Receptionist Dashboard" subtitle="Manage front-desk activity, registrations, appointments, and billing with ease." />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <StatCard icon={Calendar} label="Today's Appointments" value={data.stats.todayAppointments} color="bg-blue-500" />
-        <StatCard icon={Users} label="Recent Patients" value={data.stats.registeredPatients} color="bg-green-500" />
+        <StatCard icon={Calendar} label="Today's Appointments" value={data.stats.todayAppointments} color="bg-primary-700" />
+        <StatCard icon={Users} label="Recent Patients" value={data.stats.registeredPatients} color="bg-primary-500" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h2 className="text-lg font-semibold mb-4">Today&apos;s Appointments</h2>
           {data.todayAppointments.map((a) => (
-            <div key={a._id} className="flex justify-between p-3 bg-gray-50 rounded-lg mb-2">
+            <div key={a._id} className="soft-list-item flex justify-between mb-2">
               <div>
                 <p className="font-medium">{a.patient?.fullName}</p>
                 <p className="text-sm text-gray-500">{getDoctorName(a.doctor)}</p>
@@ -199,7 +209,7 @@ function ReceptionistDashboard() {
         <div className="card">
           <h2 className="text-lg font-semibold mb-4">Registered Patients</h2>
           {data.registeredPatients.map((p) => (
-            <div key={p._id} className="flex justify-between p-3 bg-gray-50 rounded-lg mb-2">
+            <div key={p._id} className="soft-list-item flex justify-between mb-2">
               <p className="font-medium">{p.fullName}</p>
               <p className="text-sm text-gray-500">{p.phone}</p>
             </div>
@@ -227,8 +237,8 @@ function PatientDashboard() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Patient Dashboard</h1>
-      <div className="card">
+      <DashboardHero title="Patient Dashboard" subtitle="Your appointments, prescriptions, and bills in a calm personal health space." />
+      <div className="card border-l-4 border-primary-600">
         <h2 className="text-lg font-semibold mb-2">Welcome, {data.patient.fullName}</h2>
         <p className="text-gray-500 text-sm">Blood Group: {data.patient.bloodGroup} • Age: {data.patient.age}</p>
       </div>
@@ -236,7 +246,7 @@ function PatientDashboard() {
         <div className="card">
           <h3 className="font-semibold mb-3 flex items-center gap-2"><Calendar className="w-4 h-4" /> My Appointments</h3>
           {data.myAppointments.map((a) => (
-            <div key={a._id} className="p-3 bg-gray-50 rounded-lg mb-2">
+            <div key={a._id} className="soft-list-item mb-2">
               <p className="font-medium text-sm">{formatDate(a.appointmentDate)} at {a.appointmentTime}</p>
               <p className="text-xs text-gray-500">{getDoctorName(a.doctor)}</p>
               <span className={`badge ${getStatusBadge(a.status)} mt-1`}>{a.status}</span>
@@ -246,7 +256,7 @@ function PatientDashboard() {
         <div className="card">
           <h3 className="font-semibold mb-3 flex items-center gap-2"><FileText className="w-4 h-4" /> My Prescriptions</h3>
           {data.myPrescriptions.map((p) => (
-            <div key={p._id} className="p-3 bg-gray-50 rounded-lg mb-2">
+            <div key={p._id} className="soft-list-item mb-2">
               <p className="font-medium text-sm">{formatDate(p.createdAt)}</p>
               <p className="text-xs text-gray-500">{p.items.length} medicines prescribed</p>
             </div>
@@ -255,7 +265,7 @@ function PatientDashboard() {
         <div className="card">
           <h3 className="font-semibold mb-3 flex items-center gap-2"><Receipt className="w-4 h-4" /> My Bills</h3>
           {data.myBills.map((b) => (
-            <div key={b._id} className="p-3 bg-gray-50 rounded-lg mb-2">
+            <div key={b._id} className="soft-list-item mb-2">
               <p className="font-medium text-sm">₹{b.totalAmount}</p>
               <span className={`badge ${getStatusBadge(b.status)}`}>{b.status}</span>
             </div>
