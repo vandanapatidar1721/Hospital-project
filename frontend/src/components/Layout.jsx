@@ -96,7 +96,7 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="mt-auto p-3 sm:p-4 border-t border-primary-700">
+        <div className="mt-auto mb-4 lg:mb-0 p-3 sm:p-4 border-t border-primary-700">
           <NavLink
             to="/change-password"
             onClick={() => setSidebarOpen(false)}
@@ -144,29 +144,16 @@ export default function Layout() {
         </main>
 
         <footer className="sticky bottom-0 z-20 no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div>
-              <p className="font-semibold text-white">Hospital Management System</p>
-              <p className="mt-1 text-primary-50">Digital platform for appointments, patients, doctors, prescriptions, billing, and role management.</p>
-            </div>
-            <div>
-              <p className="font-semibold text-white">Support</p>
-              <p className="mt-1 text-primary-50">24/7 Care Desk</p>
-              <p className="text-primary-50">Phone: +91 98765 43210</p>
-              <p className="text-primary-50">Email: support@hms.local</p>
-            </div>
-            <div>
-              <p className="font-semibold text-white">Quick Info</p>
-              <p className="mt-1 text-primary-50">Emergency: 108</p>
-              <p className="text-primary-50">OPD Hours: 09:00 AM - 06:00 PM</p>
-              <p className="text-primary-50">Location: Main Hospital Campus</p>
-            </div>
-            <div>
-              <p className="font-semibold text-white">Secure Access</p>
-              <p className="mt-1 text-primary-50">Logged in as <span className="capitalize">{user?.role || 'user'}</span></p>
-              <p className="text-primary-50">Data protected with authenticated access.</p>
-              <p className="text-primary-50">© {new Date().getFullYear()} HMS. All rights reserved.</p>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+            <span className="font-semibold text-white">Hospital Management System</span>
+            <span className="text-primary-50">Appointments • Patients • Doctors • Billing</span>
+            <span className="text-primary-50">Support: 24/7 Care Desk</span>
+            <span className="text-primary-50">Phone: +91 98765 43210</span>
+            <span className="text-primary-50">Email: support@hms.local</span>
+            <span className="text-primary-50">Emergency: 108</span>
+            <span className="text-primary-50">OPD: 09:00 AM - 06:00 PM</span>
+            <span className="text-primary-50">Logged in as <span className="capitalize">{user?.role || 'user'}</span></span>
+            <span className="text-primary-50">© {new Date().getFullYear()} HMS</span>
           </div>
         </footer>
       </div>
