@@ -75,7 +75,7 @@ export default function Receptionists() {
         <EmptyState message="No receptionists found" />
       ) : (
         <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 pr-4">Name</th>
@@ -106,7 +106,7 @@ export default function Receptionists() {
           <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Password</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required minLength={6} /></div>
           <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div className="sm:col-span-2 flex justify-end gap-3">
+          <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end gap-3">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Create Receptionist</button>
           </div>

@@ -94,6 +94,17 @@ export const createAppointment = async (req, res, next) => {
     const appointmentDate = new Date(req.body.appointmentDate);
     const start = new Date(appointmentDate.setHours(0, 0, 0, 0));
     const end = new Date(appointmentDate.setHours(23, 59, 59, 999));
+    const existingPatientAppointment = await Appointment.findOne({
+      patient: patientId,
+      doctor: doctor._id,
+      appointmentDate: { $gte: start, $lte: end },
+      appointmentTime: req.body.appointmentTime,
+      status: { $ne: 'Cancelled' },
+    }).populate(appointmentPopulate);
+    if (existingPatientAppointment) {
+      return res.status(200).json({ success: true, data: existingPatientAppointment, message: 'Appointment already booked' });
+    }
+
     const existingSlot = await Appointment.findOne({
       doctor: doctor._id,
       appointmentDate: { $gte: start, $lte: end },
@@ -110,6 +121,9 @@ export const createAppointment = async (req, res, next) => {
     const populated = await Appointment.findById(appointment._id).populate(appointmentPopulate);
     res.status(201).json({ success: true, data: populated });
   } catch (error) {
+    if (error.code === 11000) {
+      return next(new AppError('Appointment already exists for this patient, doctor, date, and time', 400));
+    }
     next(error);
   }
 };

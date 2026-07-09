@@ -129,10 +129,10 @@ export default function Doctors() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Doctors</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search doctors..." />
+        <div className="grid grid-cols-[3fr_2fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search doctors..." className="min-w-0" />
           {isAdmin && (
-            <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <button onClick={openCreate} className="btn-primary flex items-center gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Add Doctor
             </button>
           )}
@@ -143,7 +143,7 @@ export default function Doctors() {
         <EmptyState message="No doctors found" />
       ) : (
         <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 pr-4">Name</th>
@@ -164,11 +164,11 @@ export default function Doctors() {
                   <td className="py-3 pr-4">{doc.phone}</td>
                   <td className="py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => setViewDoctor(doc)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => setViewDoctor(doc)} className="icon-btn"><Eye className="w-4 h-4" /></button>
                       {isAdmin && (
                         <>
-                          <button onClick={() => openEdit(doc)} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>
-                          <button onClick={() => handleDelete(doc._id)} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => openEdit(doc)} className="icon-btn"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(doc._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>
                         </>
                       )}
                     </div>
@@ -191,9 +191,9 @@ export default function Doctors() {
               <option value="">Select department</option>
               {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
             </select>
-            <div className="mt-2 flex gap-2">
-              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field" placeholder="New department name" />
-              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary whitespace-nowrap">
+            <div className="mt-2 flex flex-col sm:flex-row gap-2">
+              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field min-w-0" placeholder="New department name" />
+              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary w-full sm:w-auto whitespace-nowrap">
                 {creatingDepartment ? 'Adding...' : 'Add Department'}
               </button>
             </div>

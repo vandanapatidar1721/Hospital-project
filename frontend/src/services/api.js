@@ -25,6 +25,13 @@ api.interceptors.response.use(
   }
 );
 
+export const getFileUrl = (path) => {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  const apiOrigin = api.defaults.baseURL.replace(/\/api\/?$/, '');
+  return `${apiOrigin}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
 export const getApiErrorMessage = (error, fallback = 'Something went wrong') => {
   const data = error?.response?.data;
 

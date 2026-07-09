@@ -72,9 +72,9 @@ export default function Departments() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Departments</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search departments..." />
-          <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+        <div className="grid grid-cols-[3fr_2fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search departments..." className="min-w-0" />
+          <button onClick={openCreate} className="btn-primary flex items-center gap-2 w-full sm:w-auto">
             <Plus className="w-4 h-4" /> Add Department
           </button>
         </div>
@@ -92,10 +92,10 @@ export default function Departments() {
                   <p className="text-gray-500 text-sm mt-1">{dept.description || 'No description'}</p>
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => openEdit(dept)} className="p-2 text-gray-400 hover:text-primary-600">
+                  <button onClick={() => openEdit(dept)} className="icon-btn">
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(dept._id)} className="p-2 text-gray-400 hover:text-red-600">
+                  <button onClick={() => handleDelete(dept._id)} className="icon-btn-danger">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>

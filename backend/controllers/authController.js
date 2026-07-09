@@ -1,8 +1,26 @@
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import User from '../models/User.js';
 import Patient from '../models/Patient.js';
 import { generateToken } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { buildUploadUrl } from '../middleware/upload.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadRoot = path.resolve(__dirname, '../uploads');
+
+const deleteUploadedProfileImage = async (profileImage) => {
+  if (!profileImage?.startsWith('/uploads/')) return;
+
+  const filename = path.basename(profileImage);
+  try {
+    await fs.unlink(path.join(uploadRoot, filename));
+  } catch {
+    // If the file is already missing, still remove it from the user profile.
+  }
+};
 
 export const login = async (req, res, next) => {
   try {
@@ -77,10 +95,27 @@ export const updateProfileImage = async (req, res, next) => {
     const user = await User.findById(req.user._id);
     if (!user) throw new AppError('User not found', 404);
 
+    await deleteUploadedProfileImage(user.profileImage);
     user.profileImage = buildUploadUrl(req.file.filename);
     await user.save();
 
     res.json({ success: true, data: user, message: 'Profile image updated' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProfileImage = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) throw new AppError('User not found', 404);
+    if (!user.profileImage) throw new AppError('No profile image to delete', 400);
+
+    await deleteUploadedProfileImage(user.profileImage);
+    user.profileImage = '';
+    await user.save();
+
+    res.json({ success: true, data: user, message: 'Profile image deleted' });
   } catch (error) {
     next(error);
   }

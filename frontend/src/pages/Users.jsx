@@ -157,9 +157,9 @@ export default function Users() {
               <option value="">Default: General Medicine</option>
               {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
             </select>
-            <div className="mt-2 flex gap-2">
-              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field" placeholder="New department name" />
-              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary whitespace-nowrap">{creatingDepartment ? 'Adding...' : 'Add Department'}</button>
+            <div className="mt-2 flex flex-col sm:flex-row gap-2">
+              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field min-w-0" placeholder="New department name" />
+              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary w-full sm:w-auto whitespace-nowrap">{creatingDepartment ? 'Adding...' : 'Add Department'}</button>
             </div>
           </div>
           <div><label className="block text-sm font-medium mb-1">Qualification</label><input value={state.qualification} onChange={(e) => setState({ ...state, qualification: e.target.value })} className="input-field" /></div>
@@ -183,19 +183,19 @@ export default function Users() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Role Assign</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search users..." />
-          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="input-field w-full sm:w-auto">
+        <div className="grid grid-cols-[2fr_3fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search users..." className="min-w-0" />
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="input-field w-full sm:w-auto min-w-0">
             <option value="">All Roles</option>
             {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
           </select>
-          <button onClick={openCreate} className="btn-primary flex items-center gap-2"><Plus className="w-4 h-4" /> Add User & Assign Role</button>
+          <button onClick={openCreate} className="btn-primary flex items-center gap-2 col-span-2 sm:col-span-1 w-full sm:w-auto"><Plus className="w-4 h-4" /> Add User & Assign Role</button>
         </div>
       </div>
 
       {loading ? <LoadingSpinner /> : users.length === 0 ? <EmptyState message="No users found" /> : (
         <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[760px] text-sm">
             <thead><tr className="border-b text-left text-gray-500"><th className="pb-3 pr-4">Name</th><th className="pb-3 pr-4">Email</th><th className="pb-3 pr-4">Phone</th><th className="pb-3 pr-4">Role</th><th className="pb-3 pr-4">Status</th><th className="pb-3">Actions</th></tr></thead>
             <tbody>{users.map((user) => <tr key={user._id} className="border-b last:border-0"><td className="py-3 pr-4 font-medium">{user.fullName}</td><td className="py-3 pr-4">{user.email}</td><td className="py-3 pr-4">{user.phone || '-'}</td><td className="py-3 pr-4"><span className="badge bg-primary-100 text-primary-700 capitalize">{user.role}</span></td><td className="py-3 pr-4"><span className={`badge ${user.isActive ? 'badge-completed' : 'badge-cancelled'}`}>{user.isActive ? 'Active' : 'Inactive'}</span></td><td className="py-3"><div className="flex gap-1"><button onClick={() => openEdit(user)} className="icon-btn" title="Edit user"><Pencil className="w-4 h-4" /></button><button onClick={() => handleDelete(user._id)} className="icon-btn-danger" title="Delete user"><Trash2 className="w-4 h-4" /></button></div></td></tr>)}</tbody>
           </table>

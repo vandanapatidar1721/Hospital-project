@@ -69,10 +69,10 @@ export default function Bills() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 no-print">
         <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search bills..." />
+        <div className="grid grid-cols-[3fr_2fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search bills..." className="min-w-0" />
           {canCreate && (
-            <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2">
+            <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Generate Bill
             </button>
           )}
@@ -83,7 +83,7 @@ export default function Bills() {
         <EmptyState message="No bills found" />
       ) : (
         <div className="card overflow-x-auto no-print">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 pr-4">Patient</th>
@@ -106,7 +106,7 @@ export default function Bills() {
                   <td className="py-3 pr-4"><span className={`badge ${getStatusBadge(b.status)}`}>{b.status}</span></td>
                   <td className="py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => setViewBill(b)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => setViewBill(b)} className="icon-btn"><Eye className="w-4 h-4" /></button>
                       {canCreate && b.status === 'Unpaid' && (
                         <button onClick={() => handleMarkPaid(b._id)} className="text-xs btn-primary py-1 px-2">Mark Paid</button>
                       )}
@@ -159,7 +159,7 @@ export default function Bills() {
               <h2 className="text-xl font-bold">Hospital Management System</h2>
               <p className="text-gray-500 text-sm">Invoice / Bill</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 text-sm">
               <p><span className="text-gray-500">Patient:</span> <strong>{viewBill.patient?.fullName}</strong></p>
               <p><span className="text-gray-500">Doctor:</span> {getDoctorName(viewBill.doctor)}</p>
               <p><span className="text-gray-500">Date:</span> {formatDate(viewBill.createdAt)}</p>
@@ -169,12 +169,12 @@ export default function Bills() {
               <tbody>
                 <tr className="border-b"><td className="py-2">Consultation Fee</td><td className="py-2 text-right">{formatCurrency(viewBill.consultationFee)}</td></tr>
                 <tr className="border-b"><td className="py-2">Medicine Charges</td><td className="py-2 text-right">{formatCurrency(viewBill.medicineCharges)}</td></tr>
-                <tr className="font-bold text-lg"><td className="py-2">Total Amount</td><td className="py-2 text-right">{formatCurrency(viewBill.totalAmount)}</td></tr>
+                <tr className="font-bold text-base sm:text-lg"><td className="py-2">Total Amount</td><td className="py-2 text-right">{formatCurrency(viewBill.totalAmount)}</td></tr>
               </tbody>
             </table>
             <p className="text-sm">Status: <span className={`badge ${getStatusBadge(viewBill.status)}`}>{viewBill.status}</span></p>
             <div className="flex justify-end mt-4 no-print">
-              <button onClick={() => window.print()} className="btn-primary flex items-center gap-2"><Printer className="w-4 h-4" /> Print Invoice</button>
+              <button onClick={() => window.print()} className="btn-primary flex items-center gap-2 w-full sm:w-auto"><Printer className="w-4 h-4" /> Print Invoice</button>
             </div>
           </div>
         )}

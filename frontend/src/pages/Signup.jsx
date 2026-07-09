@@ -57,17 +57,17 @@ export default function Signup() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-2xl rounded-xl bg-white p-8 shadow-xl ring-1 ring-gray-100">
-          <div className="lg:hidden flex items-center gap-3 mb-8">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-2xl rounded-xl bg-white p-5 sm:p-8 shadow-xl ring-1 ring-gray-100">
+          <div className="lg:hidden flex items-center gap-3 mb-6 sm:mb-8">
             <Hospital className="w-8 h-8 text-primary-600" />
             <span className="text-xl font-bold text-gray-900">Patient Signup</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Create patient account</h2>
-          <p className="text-gray-500 mb-8">Your account will be registered as a patient.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Create patient account</h2>
+          <p className="text-gray-500 mb-6 sm:mb-8">Your account will be registered as a patient.</p>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
               <input
@@ -108,7 +108,7 @@ export default function Signup() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 min-h-11 min-w-11 inline-flex items-center justify-center"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

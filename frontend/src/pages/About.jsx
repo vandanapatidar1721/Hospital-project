@@ -61,15 +61,15 @@ export default function About() {
   const ActiveIcon = active.icon;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="card bg-primary-800 text-white overflow-hidden relative">
-        <div className="absolute right-8 top-8 opacity-10">
-          <Activity className="w-40 h-40" />
+        <div className="hidden sm:block absolute right-8 top-8 opacity-10">
+          <Activity className="w-28 h-28 lg:w-40 lg:h-40" />
         </div>
         <div className="relative max-w-3xl">
           <p className="text-primary-100 text-sm font-medium mb-2">Welcome to HMS</p>
-          <h1 className="text-3xl font-bold mb-4">Hospital Management System</h1>
-          <p className="text-primary-100 text-lg leading-relaxed">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Hospital Management System</h1>
+          <p className="text-primary-100 text-sm sm:text-lg leading-relaxed">
             A modern digital platform for managing hospital departments, doctors, patients,
             appointments, prescriptions, billing, and user access from one secure dashboard.
           </p>
@@ -90,7 +90,7 @@ export default function About() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         <div className="card lg:col-span-1 space-y-2">
           {sections.map((section) => {
             const Icon = section.icon;
@@ -99,7 +99,7 @@ export default function About() {
               <button
                 key={section.key}
                 onClick={() => setActive(section)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                className={`w-full flex items-center gap-3 px-3 sm:px-4 py-3 rounded-lg text-left transition-colors min-h-11 ${
                   isActive ? 'bg-primary-600 text-white' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -111,12 +111,12 @@ export default function About() {
         </div>
 
         <div className="card lg:col-span-3">
-          <div className="flex items-start gap-4 mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 mb-5">
             <div className="p-3 rounded-lg bg-primary-100 text-primary-700">
               <ActiveIcon className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{active.title}</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{active.title}</h2>
               <p className="text-gray-600 mt-2 leading-relaxed">{active.content}</p>
             </div>
           </div>

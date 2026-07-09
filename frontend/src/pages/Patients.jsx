@@ -94,10 +94,10 @@ export default function Patients() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Patients</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search patients..." />
+        <div className="grid grid-cols-[3fr_2fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search patients..." className="min-w-0" />
           {canEdit && (
-            <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <button onClick={openCreate} className="btn-primary flex items-center gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Register Patient
             </button>
           )}
@@ -108,7 +108,7 @@ export default function Patients() {
         <EmptyState message="No patients found" />
       ) : (
         <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 pr-4">Name</th>
@@ -129,9 +129,9 @@ export default function Patients() {
                   <td className="py-3 pr-4">{p.bloodGroup}</td>
                   <td className="py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => setViewPatient(p)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye className="w-4 h-4" /></button>
-                      {canEdit && <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>}
-                      {user?.role === 'admin' && <button onClick={() => handleDelete(p._id)} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                      <button onClick={() => setViewPatient(p)} className="icon-btn"><Eye className="w-4 h-4" /></button>
+                      {canEdit && <button onClick={() => openEdit(p)} className="icon-btn"><Pencil className="w-4 h-4" /></button>}
+                      {user?.role === 'admin' && <button onClick={() => handleDelete(p._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>}
                     </div>
                   </td>
                 </tr>

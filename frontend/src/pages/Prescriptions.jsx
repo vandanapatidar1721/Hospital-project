@@ -66,10 +66,10 @@ export default function Prescriptions() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 no-print">
         <h1 className="text-2xl font-bold text-gray-900">Prescriptions</h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search prescriptions..." />
+        <div className="grid grid-cols-[3fr_2fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+          <SearchBar value={search} onChange={setSearch} placeholder="Search prescriptions..." className="min-w-0" />
           {isDoctor && (
-            <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2">
+            <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Create Prescription
             </button>
           )}
@@ -80,7 +80,7 @@ export default function Prescriptions() {
         <EmptyState message="No prescriptions found" />
       ) : (
         <div className="card overflow-x-auto no-print">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[620px] text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 pr-4">Patient</th>
@@ -99,7 +99,7 @@ export default function Prescriptions() {
                   <td className="py-3 pr-4">{rx.items.length}</td>
                   <td className="py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => setViewRx(rx)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => setViewRx(rx)} className="icon-btn"><Eye className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
@@ -121,19 +121,19 @@ export default function Prescriptions() {
             </select>
           </div>
           <div>
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <label className="text-sm font-medium">Medicines</label>
-              <button type="button" onClick={addItem} className="text-sm text-primary-600 hover:underline">+ Add Medicine</button>
+              <button type="button" onClick={addItem} className="btn-secondary w-full sm:w-auto">+ Add Medicine</button>
             </div>
             {form.items.map((item, i) => (
-              <div key={i} className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-2 p-3 bg-gray-50 rounded-lg">
+              <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 mb-2 p-3 bg-gray-50 rounded-lg">
                 <input placeholder="Medicine" value={item.medicineName} onChange={(e) => updateItem(i, 'medicineName', e.target.value)} className="input-field" required />
                 <input placeholder="Dosage" value={item.dosage} onChange={(e) => updateItem(i, 'dosage', e.target.value)} className="input-field" required />
                 <input placeholder="Duration" value={item.duration} onChange={(e) => updateItem(i, 'duration', e.target.value)} className="input-field" required />
                 <input placeholder="Instructions" value={item.instructions} onChange={(e) => updateItem(i, 'instructions', e.target.value)} className="input-field" />
-                <div className="flex gap-1">
+                <div className="flex gap-2 items-center">
                   <input type="number" placeholder="Price" value={item.price} onChange={(e) => updateItem(i, 'price', Number(e.target.value))} className="input-field" min={0} />
-                  {form.items.length > 1 && <button type="button" onClick={() => removeItem(i)} className="text-red-500 px-2">×</button>}
+                  {form.items.length > 1 && <button type="button" onClick={() => removeItem(i)} className="icon-btn-danger text-lg">×</button>}
                 </div>
               </div>
             ))}
@@ -156,23 +156,25 @@ export default function Prescriptions() {
               <h2 className="text-xl font-bold">Hospital Management System</h2>
               <p className="text-gray-500 text-sm">Digital Prescription</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 text-sm">
               <p><span className="text-gray-500">Patient:</span> <strong>{viewRx.patient?.fullName}</strong></p>
               <p><span className="text-gray-500">Doctor:</span> {getDoctorName(viewRx.doctor)}</p>
               <p><span className="text-gray-500">Date:</span> {formatDate(viewRx.createdAt)}</p>
               <p><span className="text-gray-500">Blood Group:</span> {viewRx.patient?.bloodGroup}</p>
             </div>
-            <table className="w-full text-sm mb-4">
-              <thead><tr className="border-b bg-gray-50"><th className="p-2 text-left">Medicine</th><th className="p-2 text-left">Dosage</th><th className="p-2 text-left">Duration</th><th className="p-2 text-left">Instructions</th></tr></thead>
-              <tbody>
-                {viewRx.items.map((item, i) => (
-                  <tr key={i} className="border-b"><td className="p-2">{item.medicineName}</td><td className="p-2">{item.dosage}</td><td className="p-2">{item.duration}</td><td className="p-2">{item.instructions}</td></tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead><tr className="border-b bg-gray-50"><th className="p-2 text-left">Medicine</th><th className="p-2 text-left">Dosage</th><th className="p-2 text-left">Duration</th><th className="p-2 text-left">Instructions</th></tr></thead>
+                <tbody>
+                  {viewRx.items.map((item, i) => (
+                    <tr key={i} className="border-b"><td className="p-2 whitespace-nowrap">{item.medicineName}</td><td className="p-2 whitespace-nowrap">{item.dosage}</td><td className="p-2 whitespace-nowrap">{item.duration}</td><td className="p-2">{item.instructions}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {viewRx.additionalNotes && <p className="text-sm text-gray-600"><strong>Notes:</strong> {viewRx.additionalNotes}</p>}
             <div className="flex justify-end mt-4 no-print">
-              <button onClick={handlePrint} className="btn-primary flex items-center gap-2"><Printer className="w-4 h-4" /> Print</button>
+              <button onClick={handlePrint} className="btn-primary flex items-center gap-2 w-full sm:w-auto"><Printer className="w-4 h-4" /> Print</button>
             </div>
           </div>
         )}
