@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 
 export default function SearchBar({ value, onChange, placeholder = 'Search...' }) {
   return (
-    <div className="relative group w-full sm:w-auto">
+    <div className="relative group">
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-400 group-focus-within:text-primary-600 transition-colors" />
       <input
         type="text"
