@@ -96,7 +96,7 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="mt-auto mb-4 lg:mb-0 p-3 sm:p-4 border-t border-primary-700">
+        <div className="mt-auto mb-8 sm:mb-6 lg:mb-0 p-3 sm:p-4 border-t border-primary-700">
           <NavLink
             to="/change-password"
             onClick={() => setSidebarOpen(false)}
@@ -144,7 +144,7 @@ export default function Layout() {
         </main>
 
         <footer className="sticky bottom-0 z-20 no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
             <span className="font-semibold text-white">Hospital Management System</span>
             <span className="text-primary-50">Appointments • Patients • Doctors • Billing</span>
             <span className="text-primary-50">Support: 24/7 Care Desk</span>
