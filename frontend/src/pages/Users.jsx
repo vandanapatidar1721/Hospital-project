@@ -210,7 +210,7 @@ export default function Users() {
           <div><label className="block text-sm font-medium mb-1">Phone</label><input value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
           <div><label className="block text-sm font-medium mb-1">Role</label><select value={createForm.role} onChange={(e) => setCreateForm({ ...emptyCreateForm, fullName: createForm.fullName, email: createForm.email, password: createForm.password, phone: createForm.phone, role: e.target.value })} className="input-field">{ROLES.map((role) => <option key={role} value={role}>{role}</option>)}</select></div>
           {roleFields(createForm, setCreateForm)}
-          <div className="sm:col-span-2 flex gap-3 justify-end"><button type="button" onClick={() => setCreateOpen(false)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Create User</button></div>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end"><button type="button" onClick={() => setCreateOpen(false)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Create User</button></div>
         </form>
       </Modal>
 
@@ -223,7 +223,7 @@ export default function Users() {
           <div><label className="block text-sm font-medium mb-1">Status</label><select value={form.isActive ? 'active' : 'inactive'} onChange={(e) => setForm({ ...form, isActive: e.target.value === 'active' })} className="input-field"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
           {roleFields(form, setForm)}
           <div className="sm:col-span-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">Role changes create/update the matching doctor, patient, or receptionist collection document.</div>
-          <div className="sm:col-span-2 flex gap-3 justify-end"><button type="button" onClick={() => setEditing(null)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Save Changes</button></div>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end"><button type="button" onClick={() => setEditing(null)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Save Changes</button></div>
         </form>}
       </Modal>
     </div>

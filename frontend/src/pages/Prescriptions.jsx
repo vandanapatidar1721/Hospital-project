@@ -142,7 +142,7 @@ export default function Prescriptions() {
             <label className="block text-sm font-medium mb-1">Additional Notes</label>
             <textarea value={form.additionalNotes} onChange={(e) => setForm({ ...form, additionalNotes: e.target.value })} className="input-field" rows={2} />
           </div>
-          <div className="flex gap-3 justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Create Prescription</button>
           </div>

@@ -192,7 +192,7 @@ export default function Appointments() {
           <div><label className="block text-sm font-medium mb-1">Date</label><input type="date" min={today} value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="input-field" required /></div>
           <div><label className="block text-sm font-medium mb-1">Time</label><select value={form.appointmentTime} onChange={(e) => setForm({ ...form, appointmentTime: e.target.value })} className="input-field" required><option value="">Select time</option>{TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Notes</label><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field" rows={2} /></div>
-          <div className="sm:col-span-2 flex gap-3 justify-end">
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Book</button>
           </div>
@@ -206,7 +206,7 @@ export default function Appointments() {
             <select id="status" defaultValue={editModal.status} className="input-field">
               {APPOINTMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button onClick={() => setEditModal(null)} className="btn-secondary">Cancel</button>
               <button onClick={() => handleStatusUpdate(editModal._id, document.getElementById('status').value)} className="btn-primary">Update</button>
             </div>

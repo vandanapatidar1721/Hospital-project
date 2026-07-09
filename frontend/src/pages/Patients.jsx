@@ -155,7 +155,7 @@ export default function Patients() {
               <div><label className="block text-sm font-medium mb-1">Password (if email provided)</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" minLength={6} /></div>
             </>
           )}
-          <div className="sm:col-span-2 flex gap-3 justify-end">
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">{editing ? 'Update' : 'Register'}</button>
           </div>

@@ -115,7 +115,7 @@ export default function Departments() {
             <label className="block text-sm font-medium mb-1">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-field" rows={3} />
           </div>
-          <div className="flex gap-3 justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">{editing ? 'Update' : 'Create'}</button>
           </div>

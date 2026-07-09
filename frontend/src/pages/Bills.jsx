@@ -145,7 +145,7 @@ export default function Bills() {
               <option value="Paid">Paid</option>
             </select>
           </div>
-          <div className="flex gap-3 justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Generate</button>
           </div>

@@ -202,7 +202,7 @@ export default function Doctors() {
           <div><label className="block text-sm font-medium mb-1">Experience (years)</label><input type="number" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} className="input-field" required min={0} /></div>
           <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
           <div><label className="block text-sm font-medium mb-1">Consultation Fee (₹)</label><input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="input-field" min={0} /></div>
-          <div className="sm:col-span-2 flex gap-3 justify-end">
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
             <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">{editing ? 'Update' : 'Create'}</button>
           </div>
