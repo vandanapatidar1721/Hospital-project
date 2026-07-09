@@ -3,9 +3,11 @@ import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 
 const emptyForm = {
   fullName: '', email: '', password: '', department: '', qualification: '', experience: '', phone: '', consultationFee: 500,
@@ -18,10 +20,13 @@ export default function Doctors() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewDoctor, setViewDoctor] = useState(null);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [newDepartment, setNewDepartment] = useState('');
   const [creatingDepartment, setCreatingDepartment] = useState(false);
 
@@ -29,7 +34,7 @@ export default function Doctors() {
     setLoading(true);
     try {
       const [docRes, deptRes] = await Promise.all([
-        api.get('/doctors', { params: { search } }),
+        api.get('/doctors', { params: { search: debouncedSearch } }),
         api.get('/departments'),
       ]);
       setDoctors(docRes.data.data);
@@ -41,7 +46,7 @@ export default function Doctors() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search]);
+  useEffect(() => { fetchData(); }, [debouncedSearch]);
 
   const openCreate = () => {
     setEditing(null);
@@ -114,14 +119,19 @@ export default function Doctors() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this doctor?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/doctors/${id}`);
+      await api.delete(`/doctors/${deleteId}`);
       toast.success('Doctor deleted');
+      setDeleteId(null);
       fetchData();
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Delete failed'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -139,7 +149,7 @@ export default function Doctors() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : doctors.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={6} /> : doctors.length === 0 ? (
         <EmptyState message="No doctors found" />
       ) : (
         <div className="card overflow-x-auto">
@@ -168,7 +178,7 @@ export default function Doctors() {
                       {isAdmin && (
                         <>
                           <button onClick={() => openEdit(doc)} className="icon-btn"><Pencil className="w-4 h-4" /></button>
-                          <button onClick={() => handleDelete(doc._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => setDeleteId(doc._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>
                         </>
                       )}
                     </div>
@@ -222,6 +232,16 @@ export default function Doctors() {
           </div>
         )}
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Doctor"
+        message="This doctor will be permanently deleted."
+        confirmText="Delete"
+        loading={deleting}
+      />
     </div>
   );
 }

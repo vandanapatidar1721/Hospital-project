@@ -3,9 +3,11 @@ import { Loader2, Plus, XCircle, Pencil, RefreshCcw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { formatDate, getDoctorName, getStatusBadge, APPOINTMENT_STATUSES, TIME_SLOTS } from '../utils/helpers';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import { useAuth } from '../context/AuthContext';
 
 export default function Appointments() {
@@ -19,10 +21,12 @@ export default function Appointments() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editModal, setEditModal] = useState(null);
   const [rebookFromId, setRebookFromId] = useState(null);
+  const [cancelAppointmentId, setCancelAppointmentId] = useState(null);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [updatingAppointmentId, setUpdatingAppointmentId] = useState(null);
   const bookingInProgressRef = useRef(false);
@@ -51,7 +55,7 @@ export default function Appointments() {
   const fetchData = async (overrides = {}) => {
     setLoading(true);
     try {
-      const effectiveSearch = overrides.search ?? search;
+      const effectiveSearch = overrides.search ?? debouncedSearch;
       const effectiveStatus = overrides.statusFilter ?? statusFilter;
       const params = { search: effectiveSearch, ...(effectiveStatus && { status: effectiveStatus }) };
       const bookingRequests = isPatient
@@ -80,7 +84,7 @@ export default function Appointments() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search, statusFilter]);
+  useEffect(() => { fetchData(); }, [debouncedSearch, statusFilter]);
 
   const resetBookingForm = () => {
     setForm({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
@@ -142,14 +146,14 @@ export default function Appointments() {
     }
   };
 
-  const handleCancel = async (id) => {
-    if (updatingAppointmentId) return;
-    if (!confirm('Cancel this appointment?')) return;
+  const handleCancel = async () => {
+    if (updatingAppointmentId || !cancelAppointmentId) return;
 
-    setUpdatingAppointmentId(id);
+    setUpdatingAppointmentId(cancelAppointmentId);
     try {
-      await api.patch(`/appointments/${id}/cancel`);
+      await api.patch(`/appointments/${cancelAppointmentId}/cancel`);
       toast.success('Appointment cancelled');
+      setCancelAppointmentId(null);
       fetchData();
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Cancel failed'));
@@ -197,7 +201,7 @@ export default function Appointments() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : appointments.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={7} /> : appointments.length === 0 ? (
         <EmptyState message="No appointments found" />
       ) : (
         <div className="card overflow-x-auto">
@@ -228,7 +232,7 @@ export default function Appointments() {
                         <button onClick={() => setEditModal(a)} disabled={!!updatingAppointmentId} className="icon-btn disabled:opacity-50" title="Update status"><Pencil className="w-4 h-4" /></button>
                       )}
                       {a.status === 'Pending' && (
-                        <button onClick={() => handleCancel(a._id)} disabled={!!updatingAppointmentId} className="icon-btn-danger disabled:opacity-50" title="Cancel">
+                        <button onClick={() => setCancelAppointmentId(a._id)} disabled={!!updatingAppointmentId} className="icon-btn-danger disabled:opacity-50" title="Cancel">
                           {updatingAppointmentId === a._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
                         </button>
                       )}
@@ -284,6 +288,17 @@ export default function Appointments() {
           </div>
         )}
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!cancelAppointmentId}
+        onClose={() => setCancelAppointmentId(null)}
+        onConfirm={handleCancel}
+        title="Cancel Appointment"
+        message="This appointment will be marked as cancelled."
+        confirmText="Cancel Appointment"
+        loading={updatingAppointmentId === cancelAppointmentId}
+        icon="warning"
+      />
     </div>
   );
 }

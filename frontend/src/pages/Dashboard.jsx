@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, UserCheck, Stethoscope, Building2, Calendar, FileText, Receipt } from 'lucide-react';
 import api from '../services/api';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { DashboardSkeleton } from '../components/LoadingSpinner';
 import { formatDate, getDoctorName, getStatusBadge } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 
@@ -52,7 +52,7 @@ function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DashboardSkeleton />;
   if (error || !data) return <DashboardError message={error} />;
 
   const { stats, todayAppointments, recentPrescriptions } = data;
@@ -126,7 +126,7 @@ function DoctorDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DashboardSkeleton />;
   if (error || !data) return <DashboardError message={error} />;
 
   return (
@@ -181,7 +181,7 @@ function ReceptionistDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DashboardSkeleton />;
   if (error || !data) return <DashboardError message={error} />;
 
   return (
@@ -233,7 +233,7 @@ function PatientDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DashboardSkeleton />;
   if (error || !data) return <DashboardError message={error} />;
 
   return (

@@ -5,6 +5,7 @@ import Receptionist from '../models/Receptionist.js';
 import Department from '../models/Department.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { escapeRegex } from '../utils/validators.js';
+import { cleanupStaleRoleData } from '../services/roleSync.js';
 
 const ensureUniqueUserIdentity = async ({ email, phone, excludeId = null }) => {
   if (email) {
@@ -177,11 +178,17 @@ export const getUsers = async (req, res, next) => {
       ];
     }
 
+    await cleanupStaleRoleData();
     const users = await User.find(filter).select('-password').sort({ createdAt: -1 });
-    await Promise.all(users.map((user) => syncUserRoleDocument(user)));
     const plainUsers = users.map((user) => user.toObject());
     const enrichedUsers = await attachProfiles(plainUsers);
-    res.json({ success: true, data: enrichedUsers });
+    const visibleUsers = enrichedUsers.filter((user) => {
+      if (user.role === 'doctor') return Boolean(user.doctorProfile);
+      if (user.role === 'patient') return Boolean(user.patientProfile);
+      if (user.role === 'receptionist') return Boolean(user.receptionistProfile);
+      return true;
+    });
+    res.json({ success: true, data: visibleUsers });
   } catch (error) {
     next(error);
   }
@@ -235,9 +242,8 @@ export const createReceptionist = async (req, res, next) => {
 
 export const syncRoleDocuments = async (req, res, next) => {
   try {
-    const users = await User.find();
-    await Promise.all(users.map((user) => syncUserRoleDocument(user)));
-    res.json({ success: true, message: 'Role documents synced successfully', count: users.length });
+    const deleted = await cleanupStaleRoleData();
+    res.json({ success: true, message: 'Stale role data cleaned successfully', deleted });
   } catch (error) {
     next(error);
   }

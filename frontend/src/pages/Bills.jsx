@@ -4,8 +4,9 @@ import { toast } from 'react-toastify';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { formatDate, formatCurrency, getDoctorName, getStatusBadge } from '../utils/helpers';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import { useAuth } from '../context/AuthContext';
 
 export default function Bills() {
@@ -15,6 +16,7 @@ export default function Bills() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewBill, setViewBill] = useState(null);
   const [form, setForm] = useState({ appointment: '', consultationFee: '', medicineCharges: '', status: 'Unpaid' });
@@ -23,7 +25,7 @@ export default function Bills() {
     setLoading(true);
     try {
       const [billRes, apptRes] = await Promise.all([
-        api.get('/bills', { params: { search } }),
+        api.get('/bills', { params: { search: debouncedSearch } }),
         ...(canCreate ? [api.get('/appointments', { params: { status: 'Completed' } })] : [Promise.resolve({ data: { data: [] } })]),
       ]);
       setBills(billRes.data.data);
@@ -35,7 +37,7 @@ export default function Bills() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search]);
+  useEffect(() => { fetchData(); }, [debouncedSearch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +81,7 @@ export default function Bills() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : bills.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={7} /> : bills.length === 0 ? (
         <EmptyState message="No bills found" />
       ) : (
         <div className="card overflow-x-auto no-print">

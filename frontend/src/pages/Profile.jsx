@@ -3,8 +3,9 @@ import { Camera, Loader2, Mail, Phone, ShieldCheck, Trash2, UserCircle } from 'l
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage, getFileUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { PageSkeleton } from '../components/LoadingSpinner';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 
 function Detail({ label, value }) {
   return (
@@ -91,7 +92,7 @@ export default function Profile() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   const profileImageUrl = getFileUrl(account?.profileImage);
 
@@ -242,41 +243,15 @@ export default function Profile() {
         </div>
       </Modal>
 
-      <Modal
+      <ConfirmModal
         isOpen={showDeleteConfirm}
-        onClose={() => !deletingImage && setShowDeleteConfirm(false)}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteProfileImage}
         title="Delete Profile Photo"
-        size="sm"
-      >
-        <div className="space-y-4 text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-            <Trash2 className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">Delete this photo?</h3>
-            <p className="text-sm text-gray-500 mt-1">This profile photo will be removed from your account.</p>
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(false)}
-              disabled={deletingImage}
-              className="btn-secondary gap-1.5 px-3 py-1.5 text-xs"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleDeleteProfileImage}
-              disabled={deletingImage}
-              className="btn-danger gap-1.5 px-3 py-1.5 text-xs"
-            >
-              {deletingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-              {deletingImage ? 'Deleting...' : 'Delete'}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        message="This profile photo will be removed from your account."
+        confirmText="Delete"
+        loading={deletingImage}
+      />
     </div>
   );
 }

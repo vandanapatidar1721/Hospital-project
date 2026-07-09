@@ -58,7 +58,7 @@ export default function Layout() {
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-60 sm:w-64 max-w-[85vw] bg-primary-800 text-white shadow-xl transform transition-transform lg:translate-x-0 flex flex-col max-h-screen ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-60 sm:w-64 max-w-[85vw] bg-primary-800 text-white shadow-xl transform transition-transform lg:translate-x-0 flex flex-col h-screen max-h-screen ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4 sm:p-6 border-b border-primary-700">
           <button
             onClick={() => {
@@ -99,6 +99,7 @@ export default function Layout() {
         <div className="mt-auto p-3 sm:p-4 border-t border-primary-700">
           <NavLink
             to="/change-password"
+            onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 sm:px-4 py-2.5 rounded-lg text-primary-100 hover:bg-primary-700 transition-colors mb-1 min-h-11"
           >
             <KeyRound className="w-5 h-5" />
@@ -115,7 +116,7 @@ export default function Layout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-200 px-3 sm:px-4 lg:px-8 py-3 sm:py-4 flex items-center justify-between no-print shadow-sm">
+        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-3 sm:px-4 lg:px-8 py-3 sm:py-4 flex items-center justify-between no-print shadow-sm">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg hover:bg-gray-100">
             {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

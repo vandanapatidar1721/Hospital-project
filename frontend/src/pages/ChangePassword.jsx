@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import api from '../services/api';
+import api, { getApiErrorMessage } from '../services/api';
 
 export default function ChangePassword() {
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -21,15 +22,15 @@ export default function ChangePassword() {
       toast.success('Password changed successfully');
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to change password');
+      toast.error(getApiErrorMessage(err, 'Failed to change password'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Change Password</h1>
+    <div className="w-full max-w-md mx-auto">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Change Password</h1>
       <div className="card">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -39,6 +40,7 @@ export default function ChangePassword() {
               value={form.currentPassword}
               onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
               className="input-field"
+              autoComplete="current-password"
               required
             />
           </div>
@@ -49,6 +51,7 @@ export default function ChangePassword() {
               value={form.newPassword}
               onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
               className="input-field"
+              autoComplete="new-password"
               minLength={6}
               required
             />
@@ -60,11 +63,13 @@ export default function ChangePassword() {
               value={form.confirmPassword}
               onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
               className="input-field"
+              autoComplete="new-password"
               minLength={6}
               required
             />
           </div>
-          <button type="submit" disabled={loading} className="btn-primary">
+          <button type="submit" disabled={loading} className="btn-primary w-full gap-2">
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {loading ? 'Updating...' : 'Update Password'}
           </button>
         </form>

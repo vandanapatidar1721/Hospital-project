@@ -3,7 +3,8 @@ import { Plus, Trash2, UserCheck } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import ConfirmModal from '../components/ConfirmModal';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 
 const emptyForm = { fullName: '', email: '', password: '', phone: '' };
 
@@ -11,6 +12,8 @@ export default function Receptionists() {
   const [receptionists, setReceptionists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
   const onlyDigits = (value) => value.replace(/\D/g, '').slice(0, 10);
@@ -18,7 +21,6 @@ export default function Receptionists() {
   const fetchReceptionists = async () => {
     setLoading(true);
     try {
-      await api.post('/users/sync-role-documents').catch(() => null);
       const { data } = await api.get('/users', { params: { role: 'receptionist' } });
       setReceptionists(data.data);
     } catch (err) {
@@ -39,7 +41,6 @@ export default function Receptionists() {
     e.preventDefault();
     try {
       await api.post('/users/receptionist', form);
-      await api.post('/users/sync-role-documents').catch(() => null);
       toast.success('Receptionist added');
       setModalOpen(false);
       fetchReceptionists();
@@ -48,14 +49,19 @@ export default function Receptionists() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this receptionist?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/users/${id}`);
+      await api.delete(`/users/${deleteId}`);
       toast.success('Receptionist deleted');
+      setDeleteId(null);
       fetchReceptionists();
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Delete failed'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -71,7 +77,7 @@ export default function Receptionists() {
         </button>
       </div>
 
-      {loading ? <LoadingSpinner /> : receptionists.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={5} /> : receptionists.length === 0 ? (
         <EmptyState message="No receptionists found" />
       ) : (
         <div className="card overflow-x-auto">
@@ -92,7 +98,7 @@ export default function Receptionists() {
                   <td className="py-3 pr-4">{r.email}</td>
                   <td className="py-3 pr-4">{r.phone || r.receptionistProfile?.phone || '-'}</td>
                   <td className="py-3 pr-4"><span className={`badge ${r.isActive ? 'badge-completed' : 'badge-cancelled'}`}>{r.isActive ? 'Active' : 'Inactive'}</span></td>
-                  <td className="py-3"><button onClick={() => handleDelete(r._id)} className="icon-btn-danger" title="Delete receptionist"><Trash2 className="w-4 h-4" /></button></td>
+                  <td className="py-3"><button onClick={() => setDeleteId(r._id)} className="icon-btn-danger" title="Delete receptionist"><Trash2 className="w-4 h-4" /></button></td>
                 </tr>
               ))}
             </tbody>
@@ -112,6 +118,16 @@ export default function Receptionists() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Receptionist"
+        message="This receptionist account will be permanently deleted."
+        confirmText="Delete"
+        loading={deleting}
+      />
     </div>
   );
 }

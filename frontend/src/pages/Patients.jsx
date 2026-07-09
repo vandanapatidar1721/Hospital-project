@@ -3,9 +3,11 @@ import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { BLOOD_GROUPS, GENDERS } from '../utils/helpers';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import { useAuth } from '../context/AuthContext';
 
 const emptyForm = { fullName: '', age: '', gender: 'Male', phone: '', address: '', bloodGroup: 'O+', email: '', password: '' };
@@ -16,15 +18,18 @@ export default function Patients() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewPatient, setViewPatient] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/patients', { params: { search } });
+      const { data } = await api.get('/patients', { params: { search: debouncedSearch } });
       setPatients(data.data);
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Failed to load patients'));
@@ -33,7 +38,7 @@ export default function Patients() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search]);
+  useEffect(() => { fetchData(); }, [debouncedSearch]);
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
   const openEdit = (p) => {
@@ -79,14 +84,19 @@ export default function Patients() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this patient?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/patients/${id}`);
+      await api.delete(`/patients/${deleteId}`);
       toast.success('Patient deleted');
+      setDeleteId(null);
       fetchData();
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Delete failed'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -104,7 +114,7 @@ export default function Patients() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : patients.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={6} /> : patients.length === 0 ? (
         <EmptyState message="No patients found" />
       ) : (
         <div className="card overflow-x-auto">
@@ -131,7 +141,7 @@ export default function Patients() {
                     <div className="flex gap-1">
                       <button onClick={() => setViewPatient(p)} className="icon-btn"><Eye className="w-4 h-4" /></button>
                       {canEdit && <button onClick={() => openEdit(p)} className="icon-btn"><Pencil className="w-4 h-4" /></button>}
-                      {user?.role === 'admin' && <button onClick={() => handleDelete(p._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>}
+                      {user?.role === 'admin' && <button onClick={() => setDeleteId(p._id)} className="icon-btn-danger"><Trash2 className="w-4 h-4" /></button>}
                     </div>
                   </td>
                 </tr>
@@ -175,6 +185,16 @@ export default function Patients() {
           </div>
         )}
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Patient"
+        message="This patient will be permanently deleted."
+        confirmText="Delete"
+        loading={deleting}
+      />
     </div>
   );
 }

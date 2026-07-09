@@ -3,9 +3,11 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api, { getApiErrorMessage } from '../services/api';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { BLOOD_GROUPS, GENDERS } from '../utils/helpers';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 
 const ROLES = ['admin', 'doctor', 'receptionist', 'patient'];
 const emptyForm = {
@@ -24,19 +26,21 @@ export default function Users() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [roleFilter, setRoleFilter] = useState('');
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState(emptyCreateForm);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [newDepartment, setNewDepartment] = useState('');
   const [creatingDepartment, setCreatingDepartment] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      await api.post('/users/sync-role-documents').catch(() => null);
-      const params = { ...(search && { search }), ...(roleFilter && { role: roleFilter }) };
+      const params = { ...(debouncedSearch && { search: debouncedSearch }), ...(roleFilter && { role: roleFilter }) };
       const [userRes, deptRes] = await Promise.all([
         api.get('/users', { params }),
         api.get('/departments'),
@@ -50,7 +54,7 @@ export default function Users() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search, roleFilter]);
+  useEffect(() => { fetchData(); }, [debouncedSearch, roleFilter]);
 
   const onlyDigits = (value) => value.replace(/\D/g, '').slice(0, 10);
 
@@ -113,7 +117,6 @@ export default function Users() {
     e.preventDefault();
     try {
       await api.post('/users', buildPayload(createForm));
-      await api.post('/users/sync-role-documents').catch(() => null);
       toast.success('User created and role assigned');
       setCreateOpen(false);
       fetchData();
@@ -126,7 +129,6 @@ export default function Users() {
     e.preventDefault();
     try {
       await api.put(`/users/${editing._id}`, buildPayload(form));
-      await api.post('/users/sync-role-documents').catch(() => null);
       toast.success('User updated and role collection synced');
       setEditing(null);
       fetchData();
@@ -135,14 +137,19 @@ export default function Users() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this user?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/users/${id}`);
+      await api.delete(`/users/${deleteId}`);
       toast.success('User deleted');
+      setDeleteId(null);
       fetchData();
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Delete failed'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -193,11 +200,11 @@ export default function Users() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : users.length === 0 ? <EmptyState message="No users found" /> : (
+      {loading ? <TableSkeleton rows={6} columns={6} /> : users.length === 0 ? <EmptyState message="No users found" /> : (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
             <thead><tr className="border-b text-left text-gray-500"><th className="pb-3 pr-4">Name</th><th className="pb-3 pr-4">Email</th><th className="pb-3 pr-4">Phone</th><th className="pb-3 pr-4">Role</th><th className="pb-3 pr-4">Status</th><th className="pb-3">Actions</th></tr></thead>
-            <tbody>{users.map((user) => <tr key={user._id} className="border-b last:border-0"><td className="py-3 pr-4 font-medium">{user.fullName}</td><td className="py-3 pr-4">{user.email}</td><td className="py-3 pr-4">{user.phone || '-'}</td><td className="py-3 pr-4"><span className="badge bg-primary-100 text-primary-700 capitalize">{user.role}</span></td><td className="py-3 pr-4"><span className={`badge ${user.isActive ? 'badge-completed' : 'badge-cancelled'}`}>{user.isActive ? 'Active' : 'Inactive'}</span></td><td className="py-3"><div className="flex gap-1"><button onClick={() => openEdit(user)} className="icon-btn" title="Edit user"><Pencil className="w-4 h-4" /></button><button onClick={() => handleDelete(user._id)} className="icon-btn-danger" title="Delete user"><Trash2 className="w-4 h-4" /></button></div></td></tr>)}</tbody>
+            <tbody>{users.map((user) => <tr key={user._id} className="border-b last:border-0"><td className="py-3 pr-4 font-medium">{user.fullName}</td><td className="py-3 pr-4">{user.email}</td><td className="py-3 pr-4">{user.phone || '-'}</td><td className="py-3 pr-4"><span className="badge bg-primary-100 text-primary-700 capitalize">{user.role}</span></td><td className="py-3 pr-4"><span className={`badge ${user.isActive ? 'badge-completed' : 'badge-cancelled'}`}>{user.isActive ? 'Active' : 'Inactive'}</span></td><td className="py-3"><div className="flex gap-1"><button onClick={() => openEdit(user)} className="icon-btn" title="Edit user"><Pencil className="w-4 h-4" /></button><button onClick={() => setDeleteId(user._id)} className="icon-btn-danger" title="Delete user"><Trash2 className="w-4 h-4" /></button></div></td></tr>)}</tbody>
           </table>
         </div>
       )}
@@ -226,6 +233,16 @@ export default function Users() {
           <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end"><button type="button" onClick={() => setEditing(null)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Save Changes</button></div>
         </form>}
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete User"
+        message="This user account will be permanently deleted."
+        confirmText="Delete"
+        loading={deleting}
+      />
     </div>
   );
 }

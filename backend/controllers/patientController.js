@@ -3,6 +3,7 @@ import Patient from '../models/Patient.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { escapeRegex } from '../utils/validators.js';
 import { assertPatientAccess } from '../services/ownership.js';
+import { cleanupStaleRoleData } from '../services/roleSync.js';
 
 const ensurePatientProfiles = async () => {
   const users = await User.find({ role: 'patient' });
@@ -38,7 +39,7 @@ export const getPatients = async (req, res, next) => {
       };
     }
 
-    await ensurePatientProfiles();
+    await cleanupStaleRoleData();
     let patients = await Patient.find(filter).populate('user', 'fullName email role').sort({ createdAt: -1 });
     patients = patients.filter((patient) => !patient.user || patient.user.role === 'patient');
     res.json({ success: true, data: patients });

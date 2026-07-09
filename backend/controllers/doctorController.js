@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import Doctor from '../models/Doctor.js';
 import Department from '../models/Department.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { cleanupStaleRoleData } from '../services/roleSync.js';
 
 const doctorPopulate = [
   { path: 'user', select: 'fullName email phone role isActive' },
@@ -45,7 +46,7 @@ export const getDoctors = async (req, res, next) => {
 
     if (department) filter.department = department;
 
-    await ensureDoctorProfiles();
+    await cleanupStaleRoleData();
     let doctors = await Doctor.find(filter).populate(doctorPopulate).sort({ createdAt: -1 });
     doctors = doctors.filter((doctor) => doctor.user?.role === 'doctor');
 

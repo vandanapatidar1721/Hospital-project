@@ -3,6 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import User from '../models/User.js';
 import Patient from '../models/Patient.js';
+import Doctor from '../models/Doctor.js';
+import Receptionist from '../models/Receptionist.js';
+import Department from '../models/Department.js';
 import { generateToken } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { buildUploadUrl } from '../middleware/upload.js';
@@ -22,6 +25,61 @@ const deleteUploadedProfileImage = async (profileImage) => {
   }
 };
 
+const getDefaultDepartment = async () => {
+  let department = await Department.findOne({ name: 'General Medicine' });
+  if (!department) {
+    department = await Department.create({
+      name: 'General Medicine',
+      description: 'Default department for general consultations',
+    });
+  }
+  return department;
+};
+
+const ensureLoginProfile = async (user) => {
+  if (user.role === 'doctor') {
+    const exists = await Doctor.exists({ user: user._id });
+    if (!exists) {
+      const department = await getDefaultDepartment();
+      await Doctor.create({
+        user: user._id,
+        department: department._id,
+        qualification: 'General Physician',
+        experience: 0,
+        phone: user.phone || '0000000000',
+        consultationFee: 500,
+      });
+    }
+  }
+
+  if (user.role === 'patient') {
+    const exists = await Patient.exists({ user: user._id });
+    if (!exists) {
+      await Patient.create({
+        user: user._id,
+        fullName: user.fullName,
+        age: 0,
+        gender: 'Other',
+        phone: user.phone || '0000000000',
+        address: '-',
+        bloodGroup: 'O+',
+      });
+    }
+  }
+
+  if (user.role === 'receptionist') {
+    const exists = await Receptionist.exists({ user: user._id });
+    if (!exists) {
+      await Receptionist.create({
+        user: user._id,
+        fullName: user.fullName,
+        phone: user.phone || '0000000000',
+        shift: 'General',
+      });
+    }
+  }
+};
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -34,6 +92,8 @@ export const login = async (req, res, next) => {
     if (!user.isActive) {
       throw new AppError('Account is deactivated', 403);
     }
+
+    await ensureLoginProfile(user);
 
     const token = generateToken(user._id);
     res.json({ success: true, token, user });

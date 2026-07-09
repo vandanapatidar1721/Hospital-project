@@ -4,8 +4,9 @@ import { toast } from 'react-toastify';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { EmptyState, TableSkeleton } from '../components/LoadingSpinner';
 import { formatDate, getDoctorName } from '../utils/helpers';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 import { useAuth } from '../context/AuthContext';
 
 const emptyItem = { medicineName: '', dosage: '', duration: '', instructions: '', price: 0 };
@@ -17,6 +18,7 @@ export default function Prescriptions() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewRx, setViewRx] = useState(null);
   const [form, setForm] = useState({ appointment: '', items: [{ ...emptyItem }], additionalNotes: '' });
@@ -25,7 +27,7 @@ export default function Prescriptions() {
     setLoading(true);
     try {
       const [rxRes, apptRes] = await Promise.all([
-        api.get('/prescriptions', { params: { search } }),
+        api.get('/prescriptions', { params: { search: debouncedSearch } }),
         ...(isDoctor ? [api.get('/appointments', { params: { status: 'Pending' } })] : [Promise.resolve({ data: { data: [] } })]),
       ]);
       setPrescriptions(rxRes.data.data);
@@ -37,7 +39,7 @@ export default function Prescriptions() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search]);
+  useEffect(() => { fetchData(); }, [debouncedSearch]);
 
   const addItem = () => setForm({ ...form, items: [...form.items, { ...emptyItem }] });
   const removeItem = (i) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) });
@@ -76,7 +78,7 @@ export default function Prescriptions() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : prescriptions.length === 0 ? (
+      {loading ? <TableSkeleton rows={6} columns={5} /> : prescriptions.length === 0 ? (
         <EmptyState message="No prescriptions found" />
       ) : (
         <div className="card overflow-x-auto no-print">

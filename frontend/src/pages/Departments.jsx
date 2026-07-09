@@ -3,21 +3,26 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 import SearchBar from '../components/SearchBar';
-import LoadingSpinner, { EmptyState } from '../components/LoadingSpinner';
+import { CardGridSkeleton, EmptyState } from '../components/LoadingSpinner';
+import useDebouncedValue from '../hooks/useDebouncedValue';
 
 export default function Departments() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState({ name: '', description: '' });
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/departments', { params: { search } });
+      const { data } = await api.get('/departments', { params: { search: debouncedSearch } });
       setDepartments(data.data);
     } catch {
       toast.error('Failed to load departments');
@@ -26,7 +31,7 @@ export default function Departments() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [search]);
+  useEffect(() => { fetchData(); }, [debouncedSearch]);
 
   const openCreate = () => {
     setEditing(null);
@@ -57,14 +62,19 @@ export default function Departments() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this department?')) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/departments/${id}`);
+      await api.delete(`/departments/${deleteId}`);
       toast.success('Department deleted');
+      setDeleteId(null);
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Delete failed');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -80,7 +90,7 @@ export default function Departments() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : departments.length === 0 ? (
+      {loading ? <CardGridSkeleton cards={6} /> : departments.length === 0 ? (
         <EmptyState message="No departments found" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -95,7 +105,7 @@ export default function Departments() {
                   <button onClick={() => openEdit(dept)} className="icon-btn">
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(dept._id)} className="icon-btn-danger">
+                  <button onClick={() => setDeleteId(dept._id)} className="icon-btn-danger">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -121,6 +131,16 @@ export default function Departments() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Department"
+        message="This department will be permanently deleted."
+        confirmText="Delete"
+        loading={deleting}
+      />
     </div>
   );
 }
