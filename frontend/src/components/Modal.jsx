@@ -9,7 +9,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className={`relative bg-white rounded-xl shadow-xl w-full ${sizes[size]} max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] overflow-hidden flex flex-col`}>
-        <div className="shrink-0 bg-white flex items-center justify-between gap-3 p-3 sm:p-6 border-b border-gray-200">
+        <div className="shrink-0 bg-white flex items-center justify-between gap-3 px-3 py-2 sm:px-6 sm:py-3 border-b border-gray-200">
           <h2 className="text-sm sm:text-xl font-semibold text-gray-900 min-w-0 truncate">{title}</h2>
           <button
             type="button"
@@ -20,7 +20,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
-        <div className="overflow-y-auto p-2.5 sm:p-6 text-xs sm:text-sm">{children}</div>
+        <div className="overflow-y-auto px-2.5 py-2 sm:px-6 sm:py-4 text-xs sm:text-sm">{children}</div>
       </div>
     </div>
   );
