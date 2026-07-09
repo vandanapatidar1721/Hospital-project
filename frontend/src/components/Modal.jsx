@@ -14,7 +14,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
           <button
             type="button"
             onClick={onClose}
-            className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 inline-flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-900 shadow-lg ring-1 ring-black/5 hover:bg-gray-100"
+            className="fixed top-3 right-3 z-[90] h-10 w-10 sm:static sm:h-10 sm:w-10 shrink-0 inline-flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-900 shadow-xl ring-2 ring-white hover:bg-gray-100"
             aria-label="Close modal"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
