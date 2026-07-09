@@ -6,9 +6,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
   const sizes = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' };
 
   return (
-    <div className="fixed mt-10 inset-0 z-[70] flex items-start sm:items-center justify-center p-1.5 sm:p-4">
+    <div className="fixed mt-70 inset-0 z-[70] flex items-start sm:items-center justify-center p-1.5 sm:p-4">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className={`relative bg-white rounded-xl shadow-xl w-full ${sizes[size]} max-h-[calc(100dvh-0.75rem)] sm:max-h-[60vh] overflow-hidden mt-1 sm:mt-10 flex flex-col`}>
+      <div className={`relative bg-white rounded-xl shadow-xl w-full ${sizes[size]} max-h-[calc(100dvh-0.25rem)] sm:max-h-[100vh] overflow-hidden mt-1 sm:mt-10 flex flex-col`}>
         <button
           type="button"
           onClick={onClose}
