@@ -5,6 +5,7 @@ import {
   createAppointment,
   updateAppointment,
   cancelAppointment,
+  deleteAppointment,
 } from '../controllers/appointmentController.js';
 import { protect, authorize } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
@@ -19,5 +20,6 @@ router.get('/:id', authorize('admin', 'doctor', 'receptionist', 'patient'), getA
 router.post('/', authorize('admin', 'receptionist', 'patient'), appointmentValidation, validate, createAppointment);
 router.put('/:id', authorize('admin', 'receptionist', 'doctor'), updateAppointment);
 router.patch('/:id/cancel', authorize('admin', 'receptionist', 'patient'), cancelAppointment);
+router.delete('/:id', authorize('admin', 'receptionist', 'patient'), deleteAppointment);
 
 export default router;

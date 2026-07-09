@@ -72,7 +72,7 @@ export default function Departments() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Departments</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
           <SearchBar value={search} onChange={setSearch} placeholder="Search departments..." />
           <button onClick={openCreate} className="btn-primary flex items-center gap-2">
             <Plus className="w-4 h-4" /> Add Department

@@ -183,9 +183,9 @@ export default function Users() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Role Assign</h1>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
           <SearchBar value={search} onChange={setSearch} placeholder="Search users..." />
-          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="input-field w-auto">
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="input-field w-full sm:w-auto">
             <option value="">All Roles</option>
             {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
           </select>

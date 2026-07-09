@@ -160,3 +160,16 @@ export const cancelAppointment = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteAppointment = async (req, res, next) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    if (!appointment) throw new AppError('Appointment not found', 404);
+    await assertAppointmentAccess(req.user, appointment);
+
+    await Appointment.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Appointment deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};

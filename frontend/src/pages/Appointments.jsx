@@ -22,6 +22,7 @@ export default function Appointments() {
   const [statusFilter, setStatusFilter] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editModal, setEditModal] = useState(null);
+  const [rebookFromId, setRebookFromId] = useState(null);
   const [form, setForm] = useState({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
   const today = new Date().toISOString().split('T')[0];
   const filteredDoctors = form.department
@@ -72,8 +73,12 @@ export default function Appointments() {
     e.preventDefault();
     try {
       await api.post('/appointments', form);
-      toast.success('Appointment booked');
+      if (rebookFromId) {
+        await api.delete(`/appointments/${rebookFromId}`);
+      }
+      toast.success(rebookFromId ? 'Appointment rebooked' : 'Appointment booked');
       setModalOpen(false);
+      setRebookFromId(null);
       setForm({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' });
       fetchData();
     } catch (err) {
@@ -112,6 +117,7 @@ export default function Appointments() {
       appointmentTime: appointment.appointmentTime || '',
       notes: appointment.notes || '',
     });
+    setRebookFromId(appointment._id);
     setModalOpen(true);
   };
 
@@ -119,14 +125,14 @@ export default function Appointments() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
           <SearchBar value={search} onChange={setSearch} placeholder="Search..." />
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field w-auto">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field w-full sm:w-auto">
             <option value="">All Status</option>
             {APPOINTMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           {canBook && (
-            <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2">
+            <button onClick={() => { setRebookFromId(null); setForm({ patient: '', doctor: '', department: '', appointmentDate: '', appointmentTime: '', notes: '' }); setModalOpen(true); }} className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center">
               <Plus className="w-4 h-4" /> Book Appointment
             </button>
           )}
@@ -178,7 +184,7 @@ export default function Appointments() {
         </div>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Book Appointment" size="lg">
+      <Modal isOpen={modalOpen} onClose={() => { setModalOpen(false); setRebookFromId(null); }} title={rebookFromId ? 'Rebook Appointment' : 'Book Appointment'} size="lg">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {!isPatient && <div><label className="block text-sm font-medium mb-1">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="input-field" required><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>}
           <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => handleDepartmentChange(e.target.value)} className="input-field" required><option value="">Select department first</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>

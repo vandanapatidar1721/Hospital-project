@@ -66,7 +66,7 @@ export default function Prescriptions() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 no-print">
         <h1 className="text-2xl font-bold text-gray-900">Prescriptions</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
           <SearchBar value={search} onChange={setSearch} placeholder="Search prescriptions..." />
           {isDoctor && (
             <button onClick={() => setModalOpen(true)} className="btn-primary flex items-center gap-2">
