@@ -115,21 +115,21 @@ export default function Layout() {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-3 sm:px-4 lg:px-8 py-3 sm:py-4 flex items-center justify-between no-print shadow-sm">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg hover:bg-gray-100">
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-2.5 sm:px-4 lg:px-6 py-2 flex items-center justify-between no-print shadow-sm">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden min-h-9 min-w-9 inline-flex items-center justify-center rounded-lg hover:bg-gray-100">
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <button
             onClick={() => navigate('/profile')}
-            className="flex items-center gap-2 sm:gap-3 ml-auto min-w-0 rounded-lg px-2 py-1 hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-2 ml-auto min-w-0 rounded-lg px-2 py-0.5 hover:bg-gray-100 transition-colors"
             title="View profile"
           >
-            <div className="text-right min-w-0 max-w-[150px] sm:max-w-none">
-              <p className="text-sm font-semibold text-gray-900 truncate">{user?.fullName}</p>
-              <p className="text-xs text-gray-500 capitalize truncate">{user?.role}</p>
+            <div className="text-right min-w-0 max-w-[130px] sm:max-w-none">
+              <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{user?.fullName}</p>
+              <p className="text-[11px] text-gray-500 capitalize truncate">{user?.role}</p>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold overflow-hidden">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold overflow-hidden">
               {profileImageUrl ? (
                 <img src={profileImageUrl} alt={user?.fullName || 'Profile'} className="w-full h-full object-cover" />
               ) : (
@@ -139,7 +139,36 @@ export default function Layout() {
           </button>
         </header>
 
-        <main className="flex-1 min-w-0 p-3 sm:p-4 lg:p-8 overflow-x-hidden overflow-y-auto"><Outlet /></main>
+        <main className="relative z-0 flex-1 min-w-0 p-3 sm:p-4 lg:p-8 overflow-x-hidden">
+          <Outlet />
+        </main>
+
+        <footer className="sticky bottom-0 z-20 no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div>
+              <p className="font-semibold text-white">Hospital Management System</p>
+              <p className="mt-1 text-primary-50">Digital platform for appointments, patients, doctors, prescriptions, billing, and role management.</p>
+            </div>
+            <div>
+              <p className="font-semibold text-white">Support</p>
+              <p className="mt-1 text-primary-50">24/7 Care Desk</p>
+              <p className="text-primary-50">Phone: +91 98765 43210</p>
+              <p className="text-primary-50">Email: support@hms.local</p>
+            </div>
+            <div>
+              <p className="font-semibold text-white">Quick Info</p>
+              <p className="mt-1 text-primary-50">Emergency: 108</p>
+              <p className="text-primary-50">OPD Hours: 09:00 AM - 06:00 PM</p>
+              <p className="text-primary-50">Location: Main Hospital Campus</p>
+            </div>
+            <div>
+              <p className="font-semibold text-white">Secure Access</p>
+              <p className="mt-1 text-primary-50">Logged in as <span className="capitalize">{user?.role || 'user'}</span></p>
+              <p className="text-primary-50">Data protected with authenticated access.</p>
+              <p className="text-primary-50">© {new Date().getFullYear()} HMS. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

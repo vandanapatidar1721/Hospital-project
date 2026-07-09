@@ -29,7 +29,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="relative z-0 w-full max-w-md mx-auto pt-2 sm:pt-0">
       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Change Password</h1>
       <div className="card">
         <form onSubmit={handleSubmit} className="space-y-4">

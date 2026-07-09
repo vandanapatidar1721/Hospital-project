@@ -108,39 +108,81 @@ async function seed() {
       { user: patientUser._id, fullName: 'John Doe', age: 35, gender: 'Male', phone: '9876543215', address: '123 Main St, City', bloodGroup: 'O+' },
       { fullName: 'Jane Smith', age: 28, gender: 'Female', phone: '9876543216', address: '456 Oak Ave, City', bloodGroup: 'A+' },
       { fullName: 'Robert Wilson', age: 45, gender: 'Male', phone: '9876543217', address: '789 Pine Rd, City', bloodGroup: 'B+' },
+      { fullName: 'Aisha Khan', age: 31, gender: 'Female', phone: '9876543218', address: '22 Lake View Road, City', bloodGroup: 'AB+' },
+      { fullName: 'Vikram Singh', age: 52, gender: 'Male', phone: '9876543219', address: '78 Green Park, City', bloodGroup: 'A-' },
+      { fullName: 'Meera Joshi', age: 24, gender: 'Female', phone: '9876543220', address: '14 Sunshine Colony, City', bloodGroup: 'O-' },
     ]);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
 
     const appointments = await Appointment.insertMany([
       { patient: patients[0]._id, doctor: doctors[0]._id, department: createdDepts[0]._id, appointmentDate: today, appointmentTime: '10:00 AM', status: 'Completed' },
       { patient: patients[1]._id, doctor: doctors[1]._id, department: createdDepts[1]._id, appointmentDate: today, appointmentTime: '11:30 AM', status: 'Pending' },
       { patient: patients[2]._id, doctor: doctors[2]._id, department: createdDepts[4]._id, appointmentDate: tomorrow, appointmentTime: '09:00 AM', status: 'Pending' },
+      { patient: patients[3]._id, doctor: doctors[0]._id, department: createdDepts[0]._id, appointmentDate: today, appointmentTime: '02:00 PM', status: 'Pending' },
+      { patient: patients[4]._id, doctor: doctors[1]._id, department: createdDepts[1]._id, appointmentDate: yesterday, appointmentTime: '04:30 PM', status: 'Completed' },
+      { patient: patients[5]._id, doctor: doctors[2]._id, department: createdDepts[4]._id, appointmentDate: nextWeek, appointmentTime: '12:00 PM', status: 'Pending' },
     ]);
 
-    await Prescription.create({
-      appointment: appointments[0]._id,
-      patient: patients[0]._id,
-      doctor: doctors[0]._id,
-      items: [
-        { medicineName: 'Aspirin', dosage: '75mg', duration: '30 days', instructions: 'Take after breakfast', price: 150 },
-        { medicineName: 'Atorvastatin', dosage: '20mg', duration: '30 days', instructions: 'Take at night', price: 300 },
-      ],
-      additionalNotes: 'Follow up in 4 weeks',
-    });
+    await Prescription.insertMany([
+      {
+        appointment: appointments[0]._id,
+        patient: patients[0]._id,
+        doctor: doctors[0]._id,
+        items: [
+          { medicineName: 'Aspirin', dosage: '75mg', duration: '30 days', instructions: 'Take after breakfast', price: 150 },
+          { medicineName: 'Atorvastatin', dosage: '20mg', duration: '30 days', instructions: 'Take at night', price: 300 },
+        ],
+        additionalNotes: 'Follow up in 4 weeks',
+      },
+      {
+        appointment: appointments[4]._id,
+        patient: patients[4]._id,
+        doctor: doctors[1]._id,
+        items: [
+          { medicineName: 'Vitamin B12', dosage: '500mcg', duration: '15 days', instructions: 'Take after lunch', price: 180 },
+          { medicineName: 'Paracetamol', dosage: '500mg', duration: '3 days', instructions: 'Take only if fever occurs', price: 60 },
+        ],
+        additionalNotes: 'Review test reports next visit',
+      },
+    ]);
 
-    await Bill.create({
-      appointment: appointments[0]._id,
-      patient: patients[0]._id,
-      doctor: doctors[0]._id,
-      consultationFee: 800,
-      medicineCharges: 450,
-      totalAmount: 1250,
-      status: 'Paid',
-    });
+    await Bill.insertMany([
+      {
+        appointment: appointments[0]._id,
+        patient: patients[0]._id,
+        doctor: doctors[0]._id,
+        consultationFee: 800,
+        medicineCharges: 450,
+        totalAmount: 1250,
+        status: 'Paid',
+      },
+      {
+        appointment: appointments[4]._id,
+        patient: patients[4]._id,
+        doctor: doctors[1]._id,
+        consultationFee: 750,
+        medicineCharges: 240,
+        totalAmount: 990,
+        status: 'Unpaid',
+      },
+      {
+        appointment: appointments[3]._id,
+        patient: patients[3]._id,
+        doctor: doctors[0]._id,
+        consultationFee: 800,
+        medicineCharges: 0,
+        totalAmount: 800,
+        status: 'Unpaid',
+      },
+    ]);
 
     process.exit(0);
   } catch (error) {
