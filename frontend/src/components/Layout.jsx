@@ -53,12 +53,12 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="h-screen overflow-hidden flex bg-gray-50">
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <aside className={`fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-60 sm:w-64 max-w-[85vw] bg-primary-800 text-white shadow-xl transform transition-transform lg:translate-x-0 flex flex-col h-screen max-h-screen ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed lg:fixed lg:top-0 inset-y-0 left-0 z-50 w-60 sm:w-64 max-w-[85vw] bg-primary-800 text-white shadow-xl transform transition-transform lg:translate-x-0 flex flex-col h-screen max-h-screen ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4 sm:p-6 border-b border-primary-700">
           <button
             onClick={() => {
@@ -115,8 +115,8 @@ export default function Layout() {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-2.5 sm:px-4 lg:px-6 py-2 flex items-center justify-between no-print shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 h-screen lg:ml-64 overflow-hidden">
+        <header className="shrink-0 z-30 bg-white border-b border-gray-200 px-2.5 sm:px-4 lg:px-6 py-2 flex items-center justify-between no-print shadow-sm">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden min-h-9 min-w-9 inline-flex items-center justify-center rounded-lg hover:bg-gray-100">
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -139,11 +139,11 @@ export default function Layout() {
           </button>
         </header>
 
-        <main className="relative z-0 flex-1 min-w-0 p-3 sm:p-4 lg:p-8 overflow-x-hidden">
+        <main className="relative z-0 flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-8">
           <Outlet />
         </main>
 
-        <footer className="mt-auto no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
+        <footer className="shrink-0 no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
             <span className="font-semibold text-white">Hospital Management System</span>
             <span className="text-primary-50">Appointments • Patients • Doctors • Billing</span>
