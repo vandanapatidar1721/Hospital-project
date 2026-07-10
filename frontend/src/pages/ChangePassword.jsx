@@ -32,43 +32,43 @@ export default function ChangePassword() {
     <div className="relative z-0 w-full max-w-md mx-auto pt-2 sm:pt-0">
       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Change Password</h1>
       <div className="card">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <label className="compact-label text-gray-700">Current Password</label>
             <input
               type="password"
               value={form.currentPassword}
               onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
-              className="input-field"
+              className="compact-field"
               autoComplete="current-password"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <label className="compact-label text-gray-700">New Password</label>
             <input
               type="password"
               value={form.newPassword}
               onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
-              className="input-field"
+              className="compact-field"
               autoComplete="new-password"
               minLength={6}
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <label className="compact-label text-gray-700">Confirm New Password</label>
             <input
               type="password"
               value={form.confirmPassword}
               onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-              className="input-field"
+              className="compact-field"
               autoComplete="new-password"
               minLength={6}
               required
             />
           </div>
-          <button type="submit" disabled={loading} className="btn-primary w-full gap-2">
+          <button type="submit" disabled={loading} className="btn-primary compact-button w-full gap-2">
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {loading ? 'Updating...' : 'Update Password'}
           </button>

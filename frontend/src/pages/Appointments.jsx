@@ -248,22 +248,22 @@ export default function Appointments() {
         </div>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => { if (!bookingLoading) { setModalOpen(false); setRebookFromId(null); } }} title={rebookFromId ? 'Rebook Appointment' : 'Book Appointment'} size="lg">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {!isPatient && <div><label className="block text-sm font-medium mb-1">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="input-field" required disabled={bookingLoading}><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>}
-          <div><label className="block text-sm font-medium mb-1">Department</label><select value={form.department} onChange={(e) => handleDepartmentChange(e.target.value)} className="input-field" required disabled={bookingLoading}><option value="">Select department first</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Doctor</label><select value={form.doctor} onChange={(e) => handleDoctorChange(e.target.value)} className="input-field" required disabled={bookingLoading || !form.department}><option value="">{form.department ? 'Select doctor' : 'Select department first'}</option>{filteredDoctors.map((d) => <option key={d._id} value={d._id}>{d.user?.fullName} - {d.qualification}</option>)}</select>{form.department && filteredDoctors.length === 0 && <p className="text-xs text-red-500 mt-1">No doctors available in this department</p>}</div>
-          <div><label className="block text-sm font-medium mb-1">Date</label><input type="date" min={today} value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="input-field" required disabled={bookingLoading} /></div>
-          <div><label className="block text-sm font-medium mb-1">Time</label><select value={form.appointmentTime} onChange={(e) => setForm({ ...form, appointmentTime: e.target.value })} className="input-field" required disabled={bookingLoading}><option value="">Select time</option>{TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
-          <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Notes</label><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field" rows={2} disabled={bookingLoading} /></div>
+      <Modal isOpen={modalOpen} onClose={() => { if (!bookingLoading) { setModalOpen(false); setRebookFromId(null); } }} title={rebookFromId ? 'Rebook Appointment' : 'Book Appointment'} size="md">
+        <form onSubmit={handleSubmit} className="compact-form">
+          {!isPatient && <div><label className="compact-label">Patient</label><select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} className="compact-field" required disabled={bookingLoading}><option value="">Select patient</option>{patients.map((p) => <option key={p._id} value={p._id}>{p.fullName}</option>)}</select></div>}
+          <div><label className="compact-label">Department</label><select value={form.department} onChange={(e) => handleDepartmentChange(e.target.value)} className="compact-field" required disabled={bookingLoading}><option value="">Select department first</option>{departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}</select></div>
+          <div><label className="compact-label">Doctor</label><select value={form.doctor} onChange={(e) => handleDoctorChange(e.target.value)} className="compact-field" required disabled={bookingLoading || !form.department}><option value="">{form.department ? 'Select doctor' : 'Select department first'}</option>{filteredDoctors.map((d) => <option key={d._id} value={d._id}>{d.user?.fullName} - {d.qualification}</option>)}</select>{form.department && filteredDoctors.length === 0 && <p className="text-xs text-red-500 mt-1">No doctors available in this department</p>}</div>
+          <div><label className="compact-label">Date</label><input type="date" min={today} value={form.appointmentDate} onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })} className="compact-field" required disabled={bookingLoading} /></div>
+          <div><label className="compact-label">Time</label><select value={form.appointmentTime} onChange={(e) => setForm({ ...form, appointmentTime: e.target.value })} className="compact-field" required disabled={bookingLoading}><option value="">Select time</option>{TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+          <div className="sm:col-span-2"><label className="compact-label">Notes</label><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="compact-field" rows={2} disabled={bookingLoading} /></div>
           {bookingLoading && (
-            <div className="sm:col-span-2 flex items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 text-sm text-primary-700">
+            <div className="sm:col-span-2 flex items-center gap-2 rounded-lg bg-primary-50 px-2 py-1.5 text-xs text-primary-700">
               <Loader2 className="w-4 h-4 animate-spin" /> Please wait, booking appointment...
             </div>
           )}
-          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} disabled={bookingLoading} className="btn-secondary">Cancel</button>
-            <button type="submit" disabled={bookingLoading} className="btn-primary flex items-center gap-2">
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} disabled={bookingLoading} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" disabled={bookingLoading} className="btn-primary compact-button flex items-center gap-2">
               {bookingLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {bookingLoading ? 'Booking...' : 'Book'}
             </button>
@@ -273,14 +273,14 @@ export default function Appointments() {
 
       <Modal isOpen={!!editModal} onClose={() => setEditModal(null)} title="Update Appointment Status">
         {editModal && (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">Patient: <strong>{editModal.patient?.fullName}</strong></p>
-            <select id="status" defaultValue={editModal.status} className="input-field">
+          <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+            <p className="text-gray-500">Patient: <strong>{editModal.patient?.fullName}</strong></p>
+            <select id="status" defaultValue={editModal.status} className="compact-field">
               {APPOINTMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
-            <div className="flex flex-col sm:flex-row gap-3 justify-end">
-              <button onClick={() => setEditModal(null)} disabled={!!updatingAppointmentId} className="btn-secondary">Cancel</button>
-              <button onClick={() => handleStatusUpdate(editModal._id, document.getElementById('status').value)} disabled={!!updatingAppointmentId} className="btn-primary flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 justify-end pt-1">
+              <button onClick={() => setEditModal(null)} disabled={!!updatingAppointmentId} className="btn-secondary compact-button">Cancel</button>
+              <button onClick={() => handleStatusUpdate(editModal._id, document.getElementById('status').value)} disabled={!!updatingAppointmentId} className="btn-primary compact-button flex items-center gap-2">
                 {updatingAppointmentId === editModal._id && <Loader2 className="w-4 h-4 animate-spin" />}
                 {updatingAppointmentId === editModal._id ? 'Updating...' : 'Update'}
               </button>

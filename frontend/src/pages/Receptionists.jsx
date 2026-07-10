@@ -72,7 +72,7 @@ export default function Receptionists() {
           <h1 className="text-2xl font-bold text-gray-900">Receptionists</h1>
           <p className="text-gray-500 text-sm mt-1">Add and manage front-desk receptionist accounts.</p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+        <button onClick={openCreate} className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Add Receptionist
         </button>
       </div>
@@ -106,15 +106,15 @@ export default function Receptionists() {
         </div>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Receptionist" size="lg">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Password</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required minLength={6} /></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end gap-3">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">Create Receptionist</button>
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Receptionist" size="md">
+        <form onSubmit={handleSubmit} className="compact-form">
+          <div><label className="compact-label">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="compact-field" required /></div>
+          <div><label className="compact-label">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="compact-field" required /></div>
+          <div><label className="compact-label">Password</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="compact-field" required minLength={6} /></div>
+          <div><label className="compact-label">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="compact-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end gap-2 pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" className="btn-primary compact-button">Create Receptionist</button>
           </div>
         </form>
       </Modal>

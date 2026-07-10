@@ -116,18 +116,18 @@ export default function Departments() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Department' : 'Add Department'}>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" required />
+            <label className="compact-label">Name</label>
+            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="compact-field" required />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-field" rows={3} />
+            <label className="compact-label">Description</label>
+            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="compact-field" rows={3} />
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">{editing ? 'Update' : 'Create'}</button>
+          <div className="flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" className="btn-primary compact-button">{editing ? 'Update' : 'Create'}</button>
           </div>
         </form>
       </Modal>

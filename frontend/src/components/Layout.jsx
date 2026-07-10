@@ -143,7 +143,7 @@ export default function Layout() {
           <Outlet />
         </main>
 
-        <footer className="sticky bottom-0 z-20 no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
+        <footer className="mt-auto no-print border-t border-primary-500 bg-primary-700 px-3 sm:px-4 lg:px-8 py-3 text-xs sm:text-sm text-white shadow-2xl">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
             <span className="font-semibold text-white">Hospital Management System</span>
             <span className="text-primary-50">Appointments • Patients • Doctors • Billing</span>

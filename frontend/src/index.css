@@ -66,6 +66,18 @@
   .icon-btn-danger {
     @apply inline-flex items-center justify-center p-1.5 rounded-full border border-red-200 bg-white text-red-600 shadow-md ring-1 ring-black/5 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-colors;
   }
+  .compact-form {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm;
+  }
+  .compact-label {
+    @apply block font-medium mb-0.5 sm:mb-1;
+  }
+  .compact-field {
+    @apply w-full max-w-full min-h-8 px-2 py-1 text-xs border border-gray-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:min-h-9 sm:text-sm;
+  }
+  .compact-button {
+    @apply min-h-8 px-3 py-1 text-xs sm:min-h-9 sm:text-sm;
+  }
 }
 
 @media (max-width: 768px) {

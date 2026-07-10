@@ -152,22 +152,22 @@ export default function Patients() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Patient' : 'Register Patient'} size="lg">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Age</label><input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} className="input-field" required min={0} /></div>
-          <div><label className="block text-sm font-medium mb-1">Gender</label><select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="input-field">{GENDERS.map((g) => <option key={g}>{g}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Blood Group</label><select value={form.bloodGroup} onChange={(e) => setForm({ ...form, bloodGroup: e.target.value })} className="input-field">{BLOOD_GROUPS.map((b) => <option key={b}>{b}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Address</label><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="input-field" required /></div>
+        <form onSubmit={handleSubmit} className="compact-form">
+          <div><label className="compact-label">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="compact-field" required /></div>
+          <div><label className="compact-label">Age</label><input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} className="compact-field" required min={0} /></div>
+          <div><label className="compact-label">Gender</label><select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="compact-field">{GENDERS.map((g) => <option key={g}>{g}</option>)}</select></div>
+          <div><label className="compact-label">Blood Group</label><select value={form.bloodGroup} onChange={(e) => setForm({ ...form, bloodGroup: e.target.value })} className="compact-field">{BLOOD_GROUPS.map((b) => <option key={b}>{b}</option>)}</select></div>
+          <div><label className="compact-label">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="compact-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
+          <div className="sm:col-span-2"><label className="compact-label">Address</label><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="compact-field" required /></div>
           {!editing && (
             <>
-              <div><label className="block text-sm font-medium mb-1">Email (optional, for login)</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" /></div>
-              <div><label className="block text-sm font-medium mb-1">Password (if email provided)</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" minLength={6} /></div>
+              <div><label className="compact-label">Email (optional, for login)</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="compact-field" /></div>
+              <div><label className="compact-label">Password (if email provided)</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="compact-field" minLength={6} /></div>
             </>
           )}
-          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">{editing ? 'Update' : 'Register'}</button>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" className="btn-primary compact-button">{editing ? 'Update' : 'Register'}</button>
           </div>
         </form>
       </Modal>

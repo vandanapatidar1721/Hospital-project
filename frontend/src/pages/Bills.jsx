@@ -122,10 +122,10 @@ export default function Bills() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Generate Bill">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
           <div>
-            <label className="block text-sm font-medium mb-1">Completed Appointment</label>
-            <select value={form.appointment} onChange={(e) => setForm({ ...form, appointment: e.target.value })} className="input-field" required>
+            <label className="compact-label">Completed Appointment</label>
+            <select value={form.appointment} onChange={(e) => setForm({ ...form, appointment: e.target.value })} className="compact-field" required>
               <option value="">Select appointment</option>
               {appointments.map((a) => (
                 <option key={a._id} value={a._id}>{a.patient?.fullName} - {formatDate(a.appointmentDate)} - {getDoctorName(a.doctor)}</option>
@@ -133,23 +133,23 @@ export default function Bills() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Consultation Fee (leave empty for auto)</label>
-            <input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="input-field" min={0} />
+            <label className="compact-label">Consultation Fee (leave empty for auto)</label>
+            <input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="compact-field" min={0} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Medicine Charges (leave empty for auto from prescription)</label>
-            <input type="number" value={form.medicineCharges} onChange={(e) => setForm({ ...form, medicineCharges: e.target.value })} className="input-field" min={0} />
+            <label className="compact-label">Medicine Charges (leave empty for auto from prescription)</label>
+            <input type="number" value={form.medicineCharges} onChange={(e) => setForm({ ...form, medicineCharges: e.target.value })} className="compact-field" min={0} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="input-field">
+            <label className="compact-label">Status</label>
+            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="compact-field">
               <option value="Unpaid">Unpaid</option>
               <option value="Paid">Paid</option>
             </select>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">Generate</button>
+          <div className="flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" className="btn-primary compact-button">Generate</button>
           </div>
         </form>
       </Modal>

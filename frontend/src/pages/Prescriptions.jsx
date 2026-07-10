@@ -111,11 +111,11 @@ export default function Prescriptions() {
         </div>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Create Prescription" size="xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Create Prescription" size="lg">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
           <div>
-            <label className="block text-sm font-medium mb-1">Appointment</label>
-            <select value={form.appointment} onChange={(e) => setForm({ ...form, appointment: e.target.value })} className="input-field" required>
+            <label className="compact-label">Appointment</label>
+            <select value={form.appointment} onChange={(e) => setForm({ ...form, appointment: e.target.value })} className="compact-field" required>
               <option value="">Select appointment</option>
               {appointments.map((a) => (
                 <option key={a._id} value={a._id}>{a.patient?.fullName} - {formatDate(a.appointmentDate)} {a.appointmentTime}</option>
@@ -123,30 +123,30 @@ export default function Prescriptions() {
             </select>
           </div>
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-              <label className="text-sm font-medium">Medicines</label>
-              <button type="button" onClick={addItem} className="btn-secondary w-full sm:w-auto">+ Add Medicine</button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1.5">
+              <label className="text-xs sm:text-sm font-medium">Medicines</label>
+              <button type="button" onClick={addItem} className="btn-secondary compact-button w-full sm:w-auto">+ Add Medicine</button>
             </div>
             {form.items.map((item, i) => (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 mb-2 p-3 bg-gray-50 rounded-lg">
-                <input placeholder="Medicine" value={item.medicineName} onChange={(e) => updateItem(i, 'medicineName', e.target.value)} className="input-field" required />
-                <input placeholder="Dosage" value={item.dosage} onChange={(e) => updateItem(i, 'dosage', e.target.value)} className="input-field" required />
-                <input placeholder="Duration" value={item.duration} onChange={(e) => updateItem(i, 'duration', e.target.value)} className="input-field" required />
-                <input placeholder="Instructions" value={item.instructions} onChange={(e) => updateItem(i, 'instructions', e.target.value)} className="input-field" />
+              <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-2 p-2 bg-gray-50 rounded-lg">
+                <input placeholder="Medicine" value={item.medicineName} onChange={(e) => updateItem(i, 'medicineName', e.target.value)} className="compact-field" required />
+                <input placeholder="Dosage" value={item.dosage} onChange={(e) => updateItem(i, 'dosage', e.target.value)} className="compact-field" required />
+                <input placeholder="Duration" value={item.duration} onChange={(e) => updateItem(i, 'duration', e.target.value)} className="compact-field" required />
+                <input placeholder="Instructions" value={item.instructions} onChange={(e) => updateItem(i, 'instructions', e.target.value)} className="compact-field" />
                 <div className="flex gap-2 items-center">
-                  <input type="number" placeholder="Price" value={item.price} onChange={(e) => updateItem(i, 'price', Number(e.target.value))} className="input-field" min={0} />
-                  {form.items.length > 1 && <button type="button" onClick={() => removeItem(i)} className="icon-btn-danger text-lg">×</button>}
+                  <input type="number" placeholder="Price" value={item.price} onChange={(e) => updateItem(i, 'price', Number(e.target.value))} className="compact-field" min={0} />
+                  {form.items.length > 1 && <button type="button" onClick={() => removeItem(i)} className="icon-btn-danger text-base">×</button>}
                 </div>
               </div>
             ))}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Additional Notes</label>
-            <textarea value={form.additionalNotes} onChange={(e) => setForm({ ...form, additionalNotes: e.target.value })} className="input-field" rows={2} />
+            <label className="compact-label">Additional Notes</label>
+            <textarea value={form.additionalNotes} onChange={(e) => setForm({ ...form, additionalNotes: e.target.value })} className="compact-field" rows={2} />
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">Create Prescription</button>
+          <div className="flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary compact-button">Cancel</button>
+            <button type="submit" className="btn-primary compact-button">Create Prescription</button>
           </div>
         </form>
       </Modal>

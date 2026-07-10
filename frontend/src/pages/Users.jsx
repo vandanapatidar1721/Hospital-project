@@ -21,6 +21,13 @@ const emptyCreateForm = {
   age: '', gender: 'Male', address: '', bloodGroup: 'O+',
 };
 
+const labelClass = 'block font-medium mb-0.5';
+const compactField = 'input-field h-8 px-2 py-1 text-xs';
+const compactButton = 'h-8 px-3 py-1 text-xs';
+const editLabelClass = 'block text-sm font-medium mb-1 break-words';
+const editFieldClass = 'input-field w-full min-w-0 min-h-11 sm:min-h-12 px-3 py-2 text-sm';
+const editButtonClass = 'min-h-11 sm:min-h-12 w-full sm:w-auto px-4 py-2 text-sm';
+
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -153,38 +160,46 @@ export default function Users() {
     }
   };
 
-  const roleFields = (state, setState) => (
-    <>
-      {state.role === 'doctor' && (
-        <>
-          <div className="sm:col-span-2 border-t pt-4"><h3 className="font-semibold text-gray-900">Doctor Details</h3></div>
-          <div className="sm:col-span-2">
-            <label className="block text-sm font-medium mb-1">Department</label>
-            <select value={state.department} onChange={(e) => setState({ ...state, department: e.target.value })} className="input-field">
-              <option value="">Default: General Medicine</option>
-              {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
-            </select>
-            <div className="mt-2 flex flex-col sm:flex-row gap-2">
-              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field min-w-0" placeholder="New department name" />
-              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary w-full sm:w-auto whitespace-nowrap">{creatingDepartment ? 'Adding...' : 'Add Department'}</button>
+  const roleFields = (state, setState, responsive = false) => {
+    const fieldClass = responsive ? editFieldClass : compactField;
+    const label = responsive ? editLabelClass : labelClass;
+    const buttonClass = responsive ? editButtonClass : compactButton;
+    const sectionSpan = responsive ? 'md:col-span-2' : 'sm:col-span-2';
+    const sectionTitle = responsive ? 'text-base sm:text-lg lg:text-xl font-semibold text-gray-900' : 'text-sm font-semibold text-gray-900';
+
+    return (
+      <>
+        {state.role === 'doctor' && (
+          <>
+            <div className={`${sectionSpan} border-t pt-3 sm:pt-4`}><h3 className={sectionTitle}>Doctor Details</h3></div>
+            <div className={sectionSpan}>
+              <label className={label}>Department</label>
+              <select value={state.department} onChange={(e) => setState({ ...state, department: e.target.value })} className={fieldClass}>
+                <option value="">Default: General Medicine</option>
+                {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
+              </select>
+              <div className="mt-3 flex w-full min-w-0 flex-col gap-3 md:flex-row">
+                <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className={`${fieldClass} min-w-0 flex-1`} placeholder="New department name" />
+                <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className={`btn-secondary ${buttonClass} shrink-0 whitespace-nowrap`}>{creatingDepartment ? 'Adding...' : 'Add Department'}</button>
+              </div>
             </div>
-          </div>
-          <div><label className="block text-sm font-medium mb-1">Qualification</label><input value={state.qualification} onChange={(e) => setState({ ...state, qualification: e.target.value })} className="input-field" /></div>
-          <div><label className="block text-sm font-medium mb-1">Experience</label><input type="number" value={state.experience} onChange={(e) => setState({ ...state, experience: e.target.value })} className="input-field" min={0} /></div>
-          <div><label className="block text-sm font-medium mb-1">Consultation Fee</label><input type="number" value={state.consultationFee} onChange={(e) => setState({ ...state, consultationFee: e.target.value })} className="input-field" min={0} /></div>
-        </>
-      )}
-      {state.role === 'patient' && (
-        <>
-          <div className="sm:col-span-2 border-t pt-4"><h3 className="font-semibold text-gray-900">Patient Details</h3></div>
-          <div><label className="block text-sm font-medium mb-1">Age</label><input type="number" value={state.age} onChange={(e) => setState({ ...state, age: e.target.value })} className="input-field" min={0} max={150} /></div>
-          <div><label className="block text-sm font-medium mb-1">Gender</label><select value={state.gender} onChange={(e) => setState({ ...state, gender: e.target.value })} className="input-field">{GENDERS.map((g) => <option key={g}>{g}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Blood Group</label><select value={state.bloodGroup} onChange={(e) => setState({ ...state, bloodGroup: e.target.value })} className="input-field">{BLOOD_GROUPS.map((b) => <option key={b}>{b}</option>)}</select></div>
-          <div className="sm:col-span-2"><label className="block text-sm font-medium mb-1">Address</label><input value={state.address} onChange={(e) => setState({ ...state, address: e.target.value })} className="input-field" /></div>
-        </>
-      )}
-    </>
-  );
+            <div className="min-w-0"><label className={label}>Qualification</label><input value={state.qualification} onChange={(e) => setState({ ...state, qualification: e.target.value })} className={fieldClass} /></div>
+            <div className="min-w-0"><label className={label}>Experience</label><input type="number" value={state.experience} onChange={(e) => setState({ ...state, experience: e.target.value })} className={fieldClass} min={0} /></div>
+            <div className="min-w-0"><label className={label}>Consultation Fee</label><input type="number" value={state.consultationFee} onChange={(e) => setState({ ...state, consultationFee: e.target.value })} className={fieldClass} min={0} /></div>
+          </>
+        )}
+        {state.role === 'patient' && (
+          <>
+            <div className={`${sectionSpan} border-t pt-3 sm:pt-4`}><h3 className={sectionTitle}>Patient Details</h3></div>
+            <div className="min-w-0"><label className={label}>Age</label><input type="number" value={state.age} onChange={(e) => setState({ ...state, age: e.target.value })} className={fieldClass} min={0} max={150} /></div>
+            <div className="min-w-0"><label className={label}>Gender</label><select value={state.gender} onChange={(e) => setState({ ...state, gender: e.target.value })} className={fieldClass}>{GENDERS.map((g) => <option key={g}>{g}</option>)}</select></div>
+            <div className="min-w-0"><label className={label}>Blood Group</label><select value={state.bloodGroup} onChange={(e) => setState({ ...state, bloodGroup: e.target.value })} className={fieldClass}>{BLOOD_GROUPS.map((b) => <option key={b}>{b}</option>)}</select></div>
+            <div className={sectionSpan}><label className={label}>Address</label><input value={state.address} onChange={(e) => setState({ ...state, address: e.target.value })} className={fieldClass} /></div>
+          </>
+        )}
+      </>
+    );
+  };
 
   return (
     <div>
@@ -209,28 +224,28 @@ export default function Users() {
         </div>
       )}
 
-      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Add User & Assign Role" size="lg">
-        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={createForm.fullName} onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Password</label><input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} className="input-field" required minLength={6} /></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div><label className="block text-sm font-medium mb-1">Role</label><select value={createForm.role} onChange={(e) => setCreateForm({ ...emptyCreateForm, fullName: createForm.fullName, email: createForm.email, password: createForm.password, phone: createForm.phone, role: e.target.value })} className="input-field">{ROLES.map((role) => <option key={role} value={role}>{role}</option>)}</select></div>
+      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Add User & Assign Role" size="md">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div><label className={labelClass}>Full Name</label><input value={createForm.fullName} onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })} className={compactField} required /></div>
+          <div><label className={labelClass}>Email</label><input type="email" value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} className={compactField} required /></div>
+          <div><label className={labelClass}>Password</label><input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} className={compactField} required minLength={6} /></div>
+          <div><label className={labelClass}>Phone</label><input value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: onlyDigits(e.target.value) })} className={compactField} inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
+          <div><label className={labelClass}>Role</label><select value={createForm.role} onChange={(e) => setCreateForm({ ...emptyCreateForm, fullName: createForm.fullName, email: createForm.email, password: createForm.password, phone: createForm.phone, role: e.target.value })} className={compactField}>{ROLES.map((role) => <option key={role} value={role}>{role}</option>)}</select></div>
           {roleFields(createForm, setCreateForm)}
-          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end"><button type="button" onClick={() => setCreateOpen(false)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Create User</button></div>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 justify-end pt-1"><button type="button" onClick={() => setCreateOpen(false)} className={`btn-secondary ${compactButton}`}>Cancel</button><button type="submit" className={`btn-primary ${compactButton}`}>Create User</button></div>
         </form>
       </Modal>
 
-      <Modal isOpen={!!editing} onClose={() => setEditing(null)} title="Edit User Role" size="lg">
-        {editing && <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div><label className="block text-sm font-medium mb-1">Role</label><select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="input-field">{ROLES.map((role) => <option key={role} value={role}>{role}</option>)}</select></div>
-          <div><label className="block text-sm font-medium mb-1">Status</label><select value={form.isActive ? 'active' : 'inactive'} onChange={(e) => setForm({ ...form, isActive: e.target.value === 'active' })} className="input-field"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-          {roleFields(form, setForm)}
-          <div className="sm:col-span-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">Role changes create/update the matching doctor, patient, or receptionist collection document.</div>
-          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end"><button type="button" onClick={() => setEditing(null)} className="btn-secondary">Cancel</button><button type="submit" className="btn-primary">Save Changes</button></div>
+      <Modal isOpen={!!editing} onClose={() => setEditing(null)} title="Edit User Role" size="lg" titleClassName="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">
+        {editing && <form onSubmit={handleSubmit} className="grid w-full min-w-0 grid-cols-1 gap-3 px-0.5 pb-20 text-sm sm:grid-cols-2 sm:gap-4 sm:px-1 sm:pb-8 md:grid-cols-2">
+          <div className="min-w-0"><label className={editLabelClass}>Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className={editFieldClass} required /></div>
+          <div className="min-w-0"><label className={editLabelClass}>Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={`${editFieldClass} break-all`} required /></div>
+          <div className="min-w-0"><label className={editLabelClass}>Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className={editFieldClass} inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
+          <div className="min-w-0"><label className={editLabelClass}>Role</label><select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={editFieldClass}>{ROLES.map((role) => <option key={role} value={role}>{role}</option>)}</select></div>
+          <div className="min-w-0"><label className={editLabelClass}>Status</label><select value={form.isActive ? 'active' : 'inactive'} onChange={(e) => setForm({ ...form, isActive: e.target.value === 'active' })} className={editFieldClass}><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+          {roleFields(form, setForm, true)}
+          <div className="rounded-lg bg-blue-50 p-3 text-sm leading-relaxed text-blue-700 md:col-span-2">Role changes create/update the matching doctor, patient, or receptionist collection document.</div>
+          <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-end md:col-span-2"><button type="button" onClick={() => setEditing(null)} className={`btn-secondary ${editButtonClass}`}>Cancel</button><button type="submit" className={`btn-primary ${editButtonClass}`}>Save Changes</button></div>
         </form>}
       </Modal>
 

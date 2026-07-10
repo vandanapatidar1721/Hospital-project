@@ -190,31 +190,54 @@ export default function Doctors() {
         </div>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Doctor' : 'Add Doctor'} size="lg">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label><input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required disabled={!!editing} /></div>
-          {!editing && <div><label className="block text-sm font-medium mb-1">Password</label><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required minLength={6} /></div>}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Doctor' : 'Add Doctor'} size="md">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div>
+            <label className="block font-medium mb-0.5">Full Name</label>
+            <input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required />
+          </div>
+          <div>
+            <label className="block font-medium mb-0.5">Email</label>
+            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required disabled={!!editing} />
+          </div>
+          {!editing && (
+            <div>
+              <label className="block font-medium mb-0.5">Password</label>
+              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required minLength={6} />
+            </div>
+          )}
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium mb-1">Department</label>
-            <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field" required>
+            <label className="block font-medium mb-0.5">Department</label>
+            <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required>
               <option value="">Select department</option>
               {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
             </select>
-            <div className="mt-2 flex flex-col sm:flex-row gap-2">
-              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field min-w-0" placeholder="New department name" />
-              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary w-full sm:w-auto whitespace-nowrap">
+            <div className="mt-1.5 flex flex-col sm:flex-row gap-2">
+              <input value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)} className="input-field h-8 min-w-0 px-2 py-1 text-xs" placeholder="New department name" />
+              <button type="button" onClick={handleAddDepartment} disabled={creatingDepartment} className="btn-secondary h-8 w-full sm:w-auto whitespace-nowrap px-3 py-1 text-xs">
                 {creatingDepartment ? 'Adding...' : 'Add Department'}
               </button>
             </div>
           </div>
-          <div><label className="block text-sm font-medium mb-1">Qualification</label><input value={form.qualification} onChange={(e) => setForm({ ...form, qualification: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium mb-1">Experience (years)</label><input type="number" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} className="input-field" required min={0} /></div>
-          <div><label className="block text-sm font-medium mb-1">Phone</label><input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field" inputMode="numeric" pattern="\d{10}" maxLength={10} required /></div>
-          <div><label className="block text-sm font-medium mb-1">Consultation Fee (₹)</label><input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="input-field" min={0} /></div>
-          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end">
-            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">{editing ? 'Update' : 'Create'}</button>
+          <div>
+            <label className="block font-medium mb-0.5">Qualification</label>
+            <input value={form.qualification} onChange={(e) => setForm({ ...form, qualification: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required />
+          </div>
+          <div>
+            <label className="block font-medium mb-0.5">Experience (years)</label>
+            <input type="number" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" required min={0} />
+          </div>
+          <div>
+            <label className="block font-medium mb-0.5">Phone</label>
+            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: onlyDigits(e.target.value) })} className="input-field h-8 px-2 py-1 text-xs" inputMode="numeric" pattern="\d{10}" maxLength={10} required />
+          </div>
+          <div>
+            <label className="block font-medium mb-0.5">Consultation Fee (₹)</label>
+            <input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} className="input-field h-8 px-2 py-1 text-xs" min={0} />
+          </div>
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 justify-end pt-1">
+            <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary h-8 px-3 py-1 text-xs">Cancel</button>
+            <button type="submit" className="btn-primary h-8 px-3 py-1 text-xs">{editing ? 'Update' : 'Create'}</button>
           </div>
         </form>
       </Modal>
