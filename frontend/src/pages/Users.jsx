@@ -202,8 +202,8 @@ export default function Users() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Role Assign</h1>
         <div className="grid grid-cols-[2fr_3fr] sm:flex sm:flex-row sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
           <SearchBar value={search} onChange={setSearch} placeholder="Search users..." className="min-w-0" />
@@ -216,7 +216,7 @@ export default function Users() {
       </div>
 
       {loading ? <TableSkeleton rows={6} columns={6} /> : users.length === 0 ? <EmptyState message="No users found" /> : (
-        <div className="card flex-1 min-h-0 overflow-auto">
+        <div className="card overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
             <thead><tr className="border-b text-left text-gray-500"><th className="pb-3 pr-4">Name</th><th className="pb-3 pr-4">Email</th><th className="pb-3 pr-4">Phone</th><th className="pb-3 pr-4">Role</th><th className="pb-3 pr-4">Status</th><th className="pb-3">Actions</th></tr></thead>
             <tbody>{users.map((user) => <tr key={user._id} className="border-b last:border-0"><td className="py-3 pr-4 font-medium">{user.fullName}</td><td className="py-3 pr-4">{user.email}</td><td className="py-3 pr-4">{user.phone || '-'}</td><td className="py-3 pr-4"><span className="badge bg-primary-100 text-primary-700 capitalize">{user.role}</span></td><td className="py-3 pr-4"><span className={`badge ${user.isActive ? 'badge-completed' : 'badge-cancelled'}`}>{user.isActive ? 'Active' : 'Inactive'}</span></td><td className="py-3"><div className="flex gap-1"><button onClick={() => openEdit(user)} className="icon-btn" title="Edit user"><Pencil className="w-4 h-4" /></button><button onClick={() => setDeleteId(user._id)} className="icon-btn-danger" title="Delete user"><Trash2 className="w-4 h-4" /></button></div></td></tr>)}</tbody>
